@@ -34,16 +34,27 @@ class Upload extends CI_Controller {
                 if($count++ == 0)continue;
                 $data_real = $data;
                 
+                $movie_name = reform_title($data[1]);
+                 if(!preg_match('/[a-zA-Z0-9]/',$movie_name))continue;
+                
                         $to_insert= array(
-                            'movie_name' =>  reform_title($data[1]) , 
+                            'movie_name' => $movie_name , 
                             'movie_channel_link' => reform_url($data[5]),
                             'movie_direct_links' => reform_url($data[6]) ,
                             'movie_release_date' =>date('Y-m-d H:i:s', strtotime( reform_title($data[9]))) ,
                             'movie_release_countries' =>  reform_title($data[11])
                             );
 
-                
-             $res = $this->utils->insert_movie($to_insert);
+                if(!$this->utils->movie_exists($movie_name))
+                    $this->utils->insert_movie($to_insert);
+                else 
+                    $this->utils->update_movie($to_insert);
+                    
+                $movie_id = $this->utils->get_movie_id($movie_name);
+                    
+                echo $movie_id, '<br/>';
+             
+             //Insert or Update genre
           $genre1= trim(reform_title($data[2]));
           $genre2= trim(reform_title($data[3]));
           $genre3= trim(reform_title($data[4]));
@@ -55,13 +66,15 @@ class Upload extends CI_Controller {
           
           foreach($all_genre as $single){
               if(!$this->utils->genre_exists($single))$this->utils->insert_genre($single);
+              $genre_id = $this->utils->get_genre_id($single);
               if(!$this->utils->has_genre_movie($movie_id, $genre_id))$this->utils->insert_rel_genre($movie_id,$genre_id);
           }
             
+          //Insert or Update Actors
              
                 
               
-                if($count == 100)break;
+                if($count > 100)break;
              
             }
             fclose($handle);

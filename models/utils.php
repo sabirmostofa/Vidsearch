@@ -1,85 +1,70 @@
 <?php
 
-class Utils extends CI_Model{
-    
+class Utils extends CI_Model {
+
     function __construct() {
         parent::__construct();
     }
-    
-    function insert_movie($data){
+
+    function movie_exists($movie_name) {
+        $movie_name = mysql_real_escape_string($movie_name);
+        $movie = $this->db->query("select movie_id from vs_movies where movie_name='$movie_name' ")->row();
+        if (is_array($movie) && count($movie) == 0)
+            return false;
+        return true;
+    }
+
+    function get_movie_id($movie_name) {
+        $movie_name = mysql_real_escape_string($movie_name);
+        $movie = $this->db->query("select movie_id from vs_movies where movie_name='$movie_name' ")->row();
+        return $movie->movie_id;
+    }
+
+    function insert_movie($data) {
         extract($data);
-        $names= array('movie_name', 'movie_channel_link', 'movie_direct_links', 'movie_release_date','movie_release_countries');
-        foreach($names as $val){
-        $this->$val= $$val;
+        $names = array('movie_name', 'movie_channel_link', 'movie_direct_links', 'movie_release_date', 'movie_release_countries');
+        foreach ($names as $val) {
+            $this->$val = $$val;
         }
-       return $this->db->insert('vs_movies',$this);
-       
+        return $this->db->insert('vs_movies', $this);
     }
-    
-    //fetch a single course 
-    function get_course($id){
-        return $this->db->query("select * from t_course where iCourseId =$id");
+
+    function update_movie($data) {
+        $m_name = array_shift($data);
+        $this->db->update('vs_movies', $data, array('movie_name' => $m_name));
+    }
+
+    //Genre Functions
+    function genre_exists($genre) {
+        $genre = mysql_real_escape_string($genre);
+        $gen = $this->db->query("select id from vs_genre where genre='$genre' ")->row();
+        if (is_array($gen) && count($gen) == 0)
+            return false;
+        return true;
+    }
+
+    function insert_genre($genre) {
+        $this->db->insert('vs_genre', array('genre' => $genre));
+    }
+
+    function get_genre_id($genre) {
+        $genre = mysql_real_escape_string($genre);
+        $gen = $this->db->query("select id from vs_genre where genre='$genre' ")->row();
+        return $gen->id;        
+    }
+
+    function has_genre_movie($movie_id, $genre_id) {
+        $gen = $this->db->query("select movie_id from vs_movies_genre where movie_id=$movie_id and genre_id= $genre_id")->row();
+        if (is_array($gen) && count($gen) == 0)
+            return false;
+        return true;
         
     }
-    
-    function get_teacher($id){
-        return $this->db->query("select * from t_teacher where iteacherid=$id");
+
+    function insert_rel_genre($movie_id, $genre_id) {
+         $this->db->insert('vs_movies_genre', array('movie_id' => $movie_id , 'genre_id' =>$genre_id));        
     }
-    
-    function get_all($table){
-        return $this->db->get($table)->result();        
-    }
-    public function insert(){                
-        $this->ICourseId = $this->input->post('id');
-        $this->vCourseName = $this->input->post('name');
-        $this->dubCourseCredit = $this->input->post('credit');
-        $this->ICourseType = $this->input->post('type');
-        $this->dubFullMarks = $this->input->post('fullmarks');
-        $this->dDateOfLastUpdate = date('Y:m:d');
-        return $this->db->insert('t_course', $this);
-    }
-    
-        public function insert_students(){                
-        $this->iStudentId = $this->input->post('id');
-        $this->vStudentFirstName = $this->input->post('name');
-        $this->vSessionNo = $this->input->post('session');
-        $this->iClassRollNo = $this->input->post('class_roll');
-        $this->dDateOfLastUpdate = date('Y:m:d');
-        return $this->db->insert('t_student', $this);
-    }
-    
-    public function delete_student($id){
-        return $this->db->delete('t_student', array('IStudentId' =>$id));
-    }
-    public function delete_course($id){
-        return $this->db->delete('t_course', array('ICourseId' =>$id));
-    }
-    
-    
-    public function update_teacher(){  
-        $this->vTeacherFirstName = $this->input->post('vTeacherFirstName');
-        $this->vTeacherMiddleName= $this->input->post('vTeacherMiddleName');
-        $this->vTeacherLastName = $this->input->post('vTeacherLastName');
-        $this->dDateOfJoining = $this->input->post('dDateOfJoining');
-        $this->dDateOfBirth= $this->input->post('dDateOfBirth');
-        $this->vTeacherDesignation = $this->input->post('vTeacherDesignation');
-        $this->vCurrentAddress = $this->input->post('vCurrentAddress');
-        $this->vPermanentAddress = $this->input->post('vPermanentAddress ');
-        $this->vEmailAddress = $this->input->post('vEmailAddress');
-        $this->vTelephoneNumber = $this->input->post('vTelephoneNumber');
-        
-        return $this->db->update('t_teacher', $this, array('iTeacherId'=>$this->input->post('iTeacherId')));
-    }
-    public function update_course(){
-                $this->ICourseId = $this->input->post('id');
-        $this->vCourseName = $this->input->post('name');
-        $this->dubCourseCredit = $this->input->post('credit');
-        $this->ICourseType = $this->input->post('type');
-        $this->dubFullMarks = $this->input->post('fullmarks');
-        $this->dDateOfLastUpdate = date('Y:m:d');
-        return $this->db->update('t_course', $this,array('ICourseId' => $this->input->post('id')));
-    }
-    
-    
+
 }
+
 ?>

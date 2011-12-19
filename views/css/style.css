@@ -1,0 +1,46 @@
+#header{
+    height: 204px;
+    background: red url('../images/headerback.png') repeat-x;
+    
+}
+
+#navbar_spacer{
+    height: 6px;
+}
+
+#navbar{
+    height: 40px;
+    background-color: #3B424C;
+    
+}
+#header_spacer{
+    height: 10px;
+}
+#logo img{
+/*  margin: 20px 0 0 20px;*/
+    
+}
+
+#content{
+    background-color: #306E73;
+    
+}
+#sidebar_links{
+   height: 300px;
+   border: 1px solid black;
+}
+
+#footer{
+    color:white;
+    height: 40px;
+    background: red url('../images/menuback.png') repeat-x;
+    text-align: center;
+}
+#footer p{
+    margin: 0;
+    line-height: 18px;
+}
+
+#tut_table_s td{
+    width: 50px;
+}

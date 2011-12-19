@@ -1,0 +1,166 @@
+
+
+/* tabs
+*************************/
+
+ul.tabs
+{
+	display: table;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: relative;
+}
+
+ul.tabs li
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: table-cell;
+	float: left;
+	position: relative;
+}
+
+ul.tabs a
+{
+	position: relative;
+	display: block;
+}
+
+/* dropdowns
+*************************/
+
+ul.dropdown
+{
+	margin: 0;
+	padding: 0;
+	display: block;
+	position: absolute;
+	z-index: 999;
+	top: 100%;
+	width: 250px;
+	display: none;
+	left: 0;
+}
+
+ul.dropdown ul.dropdown
+{
+	top: 0;
+	left: 95%;
+}
+
+ul.dropdown li
+{
+	margin: 0;
+	padding: 0;
+	float: none;
+	position: relative;
+	list-style: none;
+	display: block;
+}
+
+ul.dropdown li a
+{
+	display: block;
+}
+
+
+/* navbar-specifc
+*************************/
+
+#navbar
+{
+	position: relative;
+	z-index: 5;	
+	width: 100%;
+	height: 40px;	
+	
+	border-bottom: 1px solid #000;
+}
+
+#navbar ul
+{
+	margin: 0 auto;
+        font-size: 18px;
+}
+
+#navbar ul li.hasmore
+{
+	background: url(../images/drophighlight.png) no-repeat center 27px;
+}
+
+#navbar ul li h4
+{
+	margin: 0;
+}
+
+#navbar ul li h4 a
+{
+	font-size: 14px;
+	color: #000;
+	font-weight: bold;
+	padding: 0 15px;
+}
+
+#navbar ul li a
+{
+	color: white;
+	padding-left: 4px;
+}
+
+#navbar ul li a img
+{
+	vertical-align: middle;
+}
+
+#navbar ul li a:hover
+{
+	background: url(../images/topselectionleft.png) top left no-repeat;
+}
+
+#navbar ul li a span
+{
+	display: block;
+	padding: 0 15px 0 11px;
+}
+
+#navbar ul li a:hover span
+{
+/*	background: url(../images/topselectionright.png) top right;*/
+	background: url(../images/menuback.png) top right;
+
+}
+
+#navbar ul.dropdown
+{
+	padding: 10px;
+/*	background-image: url(../images/dropdown.png);*/
+	background-image: url(../images/headerback.png);
+	overflow:hidden;
+	border-bottom: 1px solid #dc902f;
+	width: 290px;
+}
+
+#navbar ul.dropdown li a
+{
+	border-bottom: 1px solid #e5cd8e;
+	line-height: 30px;
+	overflow: hidden;
+	height: 30px;
+}
+
+#navbar ul.dropdown li.last a
+{
+	border-bottom-width: 0;
+}
+
+#navbar ul.dropdown li a:hover
+{
+	background: url(../images/navbararrow.png) no-repeat left center;
+}
+
+#navbar ul li h4 a:hover
+{
+	background-image: none;
+}

@@ -64,7 +64,7 @@ class Upload extends CI_Controller {
                         $single = trim($single);
                         if (strlen($single) > 8) {
                             if (!$this->utils->movie_link_exists($movie_id, $single))
-                                $this->utils->insert_link($single);
+                                $this->utils->insert_link($movie_id,$single);
                         }
                     }
 

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 18, 2011 at 09:15 PM
+-- Generation Time: Dec 20, 2011 at 03:41 AM
 -- Server version: 5.1.54
 -- PHP Version: 5.3.5-1ubuntu7.2
 
@@ -58,6 +58,24 @@ CREATE TABLE IF NOT EXISTS `vs_genre` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `vs_links`
+--
+
+CREATE TABLE IF NOT EXISTS `vs_links` (
+  `movie_id` bigint(20) NOT NULL,
+  `link_url` varchar(200) NOT NULL,
+  PRIMARY KEY (`movie_id`,`link_url`),
+  key `link_url`(`link_url`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `vs_links`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `vs_movies`
 --
 
@@ -65,7 +83,6 @@ CREATE TABLE IF NOT EXISTS `vs_movies` (
   `movie_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `movie_name` varchar(120) NOT NULL,
   `movie_channel_link` text NOT NULL,
-  `movie_direct_links` text NOT NULL,
   `movie_release_date` datetime NOT NULL,
   `movie_release_countries` text NOT NULL,
   PRIMARY KEY (`movie_id`),
@@ -104,10 +121,9 @@ CREATE TABLE IF NOT EXISTS `vs_movies_actors` (
 CREATE TABLE IF NOT EXISTS `vs_movies_genre` (
   `movie_id` bigint(20) NOT NULL,
   `genre_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`movie_id`, `genre_id`),
+  PRIMARY KEY (`movie_id`,`genre_id`),
   KEY `genre_id` (`genre_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
 
 --
 -- Dumping data for table `vs_movies_genre`

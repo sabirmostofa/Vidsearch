@@ -114,6 +114,25 @@ class Utils extends CI_Model {
         $this->db->save_queries = false;
         $this->db->insert('vs_movies_actors', array('movie_id' => $movie_id, 'actor_id' => $actor_id));
     }
+    
+    
+    //Ajax Functions
+    
+    function get_search_terms($q){
+        $q = mysql_real_escape_string($q);
+        return $this->db->query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
+    }
+    
+    //front functions
+    
+    function get_links($s, $page){
+        $s = mysql_real_escape_string($s);
+        $low=($page-1)*10;
+        $amount = 10;
+        return $this->db->query("select vs_movies.movie_name, vs_links.link_url 
+                from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
+                where vs_movies.movie_name='$s' limit $low, $amount");
+    }
 
 }
 

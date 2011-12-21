@@ -1,4 +1,11 @@
 $(document).ready(function(){
+    
+     var options = { 
+        serviceUrl : ajaxUrl,
+        width:300
+    };			
+    $('#search_box').autocomplete(options);
+    
     $("#select_course").change(function(){
         var courseId = $(this).val();
         var courseName = $('select option:selected').text();

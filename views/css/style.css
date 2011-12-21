@@ -1,46 +1,48 @@
-#header{
-    height: 204px;
-    background: red url('../images/headerback.png') repeat-x;
-    
+
+*{
+    margin:0;
+    padding:0;
+}
+#search_back{
+    height:140px;
+    background-color: black;
+    margin-top: 100px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
-#navbar_spacer{
-    height: 6px;
+#logo_vid{
+    width:256px;
+    margin: 20px auto 0 auto; 
 }
 
-#navbar{
-    height: 40px;
-    background-color: #3B424C;
-    
-}
-#header_spacer{
-    height: 10px;
-}
-#logo img{
-/*  margin: 20px 0 0 20px;*/
-    
+#search_box{
+    width:550px;
+    height:30px;
+    margin-left: 20px;
+    float:left;
+    font-size: 20px;
 }
 
-#content{
-    background-color: #306E73;
-    
-}
-#sidebar_links{
-   height: 300px;
-   border: 1px solid black;
+#search_form{
+    margin-top: 25px;
 }
 
-#footer{
-    color:white;
-    height: 40px;
-    background: red url('../images/menuback.png') repeat-x;
-    text-align: center;
-}
-#footer p{
-    margin: 0;
-    line-height: 18px;
+#submit_image{
+margin-left: 15px;
 }
 
-#tut_table_s td{
-    width: 50px;
+#result_container{
+    margin-top: 20px;
+    border: 1px solid black;
+    height: 100px;
+    margin-left: 120px;
 }
+
+/*autocomplete rules*/
+
+.autocomplete-w1 { background:url(../images/shadow.png) no-repeat bottom right; position:absolute; top:0px; left:0px; margin:6px 0 0 6px; /* IE6 fix: */ _background:none; _margin:1px 0 0 0; }
+.autocomplete { border:1px solid #999; background:#FFF; cursor:default; text-align:left; max-height:350px; overflow:auto; margin:-6px 6px 6px -6px; /* IE6 specific: */ _height:350px;  _margin:0; _overflow-x:hidden; }
+.autocomplete .selected { background:#F0F0F0; }
+.autocomplete div { padding:2px 5px; white-space:nowrap; overflow:hidden; }
+.autocomplete strong { font-weight:normal; color:#3399FF; }

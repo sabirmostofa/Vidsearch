@@ -26,15 +26,16 @@ class Upload extends CI_Controller {
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
         $file = dirname(dirname(dirname(__FILE__)));
-        $file = $file . '/test.csv';
+        $file = $file . '/process.csv';
 $time=time();
 
         if (($handle = fopen($file, "r")) !== FALSE) {
             $count = 0;
-            while (($data = fgetcsv($handle, 10000, "\t")) !== FALSE) {
+            while (($data = fgetcsv($handle, 10000, ",")) !== FALSE) {
                 if ($count++ == 0)
                     continue;
                 $data_real = $data;
+          
 
                 $movie_name = reform_title($data[1]);
                 if (strlen($movie_name)<2)
@@ -65,7 +66,7 @@ $time=time();
                 if (is_array($all_links))
                     foreach ($all_links as $single) {
                         $single = trim($single);
-                        if (strlen($single) > 8) {
+                        if (strlen($single) > 10 && strlen($single) <200) {
                             if (!$this->utils->movie_link_exists($movie_id, $single))
                                 $this->utils->insert_link($movie_id,$single);
                         }

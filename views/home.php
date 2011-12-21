@@ -22,7 +22,7 @@
                             $cur_page= $_GET['per_page'];
                         else $cur_page = 0;
                         
-                        $start= $cur_page*10 +1;
+                        $start= $cur_page+1;
                         $end= $start+9;
                         $end = $end>$total_num? $total_num:$end;
                         

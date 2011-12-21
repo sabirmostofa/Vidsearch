@@ -124,9 +124,9 @@ class Utils extends CI_Model {
 
     //front functions
 
-    function get_links($s, $page) {
+    function get_links($s, $start) {
         $s = mysql_real_escape_string($s);
-        $low = $page * 10;
+        $low = $start;
         $amount = 10;
         return $this->db->query("select vs_movies.movie_name, vs_links.link_url 
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
@@ -134,6 +134,7 @@ class Utils extends CI_Model {
     }
 
     function get_total_num($s) {
+        $s = mysql_real_escape_string($s);
         return $this->db->query("select count(*) as total
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");

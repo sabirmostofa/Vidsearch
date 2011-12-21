@@ -16,10 +16,10 @@ class Main extends CI_Controller {
 
         if ($s = $this->input->get("search_term")) {
             if (isset($_GET['per_page']) && is_numeric($_GET['per_page']))
-                $cur_page = $_GET['per_page'];
+                $per_page = $_GET['per_page'];
             else
-                $cur_page = 0;
-            $all_links = $this->utils->get_links($s, $cur_page)->result();
+                $per_page = 0;
+            $all_links = $this->utils->get_links($s, $per_page)->result();
             $res['data'] = $all_links;
             $res['total_num'] = $this->utils->get_total_num($s)->row()->total;
             $config['base_url'] = base_url() . '?search_term=' . $s;

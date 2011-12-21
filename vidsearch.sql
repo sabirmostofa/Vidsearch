@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `vs_actors` (
 
 CREATE TABLE IF NOT EXISTS `vs_genre` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `genre` varchar(30) NOT NULL,
+  `genre` varchar(40) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `genre` (`genre`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;

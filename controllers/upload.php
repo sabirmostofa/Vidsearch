@@ -19,6 +19,7 @@ class Upload extends CI_Controller {
     }
 
     public function form_alt() {
+        set_time_limit(3600);
         $this->load->helper('url');
         $this->load->helper('form');
         $this->load->helper('html');
@@ -26,7 +27,7 @@ class Upload extends CI_Controller {
         $this->load->model('utils', '', true);
         $file = dirname(dirname(dirname(__FILE__)));
         $file = $file . '/test.csv';
-
+$time=time();
 
         if (($handle = fopen($file, "r")) !== FALSE) {
             $count = 0;
@@ -36,7 +37,7 @@ class Upload extends CI_Controller {
                 $data_real = $data;
 
                 $movie_name = reform_title($data[1]);
-                if (!preg_match('/[a-zA-Z0-9]/', $movie_name))
+                if (strlen($movie_name)<2)
                     continue;
 
                 $to_insert = array(
@@ -53,7 +54,7 @@ class Upload extends CI_Controller {
 
                 $movie_id = $this->utils->get_movie_id($movie_name);
 
-                echo $movie_id, '<br/>';
+              
 
                 // Insert Links
                 $all_links = reform_url($data[6]);
@@ -69,17 +70,17 @@ class Upload extends CI_Controller {
                     }
 
                 //Insert or Update genre
-                $genre1 = trim(reform_title($data[2]));
-                $genre2 = trim(reform_title($data[3]));
-                $genre3 = trim(reform_title($data[4]));
+                $genre1 = reform_title($data[2]);
+                $genre2 = reform_title($data[3]);
+                $genre3 = reform_title($data[4]);
 
                 $all_genre = array();
-                if (preg_match('/[a-zA-Z]/', $genre1))
-                    $all_genre[] = $genre1;
-                if (preg_match('/[a-zA-Z]/', $genre2))
-                    $all_genre[] = $genre2;
-                if (preg_match('/[a-zA-Z]/', $genre3))
-                    $all_genre[] = $genre3;
+                if (strlen($genre1) > 2)
+                    $all_genre[] = substr ($genre1,0,40);
+                if (strlen($genre2) > 2)
+                    $all_genre[] = substr ($genre1,0,40);
+                if (strlen($genre3) > 2)
+                    $all_genre[] = substr ($genre1,0,40);
 
                 foreach ($all_genre as $single) {
                     if (!$this->utils->genre_exists($single))
@@ -94,7 +95,7 @@ class Upload extends CI_Controller {
                 $all_actors = explode(';', $all_actors);
                 if (is_array($all_actors))
                     foreach ($all_actors as $single) {
-                        $single = trim($single);
+                        $single = substr(reform_title($single), 0, 58 );
                         if (strlen($single) > 2) {
                             if (!$this->utils->actor_exists($single))
                                 $this->utils->insert_actor($single);
@@ -106,10 +107,12 @@ class Upload extends CI_Controller {
 
 
 
-                if ($count > 100)
-                    break;
+//               if ($count > 20000)
+//                   break;
             }
             fclose($handle);
+            $time_last=time();
+            var_dump(($time_last -$time));
         }
     }
 

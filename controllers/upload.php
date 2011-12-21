@@ -55,6 +55,7 @@ $time=time();
                     $this->utils->update_movie($to_insert);
 
                 $movie_id = $this->utils->get_movie_id($movie_name);
+                if(!is_int($movie_id))continue;
 
               
 

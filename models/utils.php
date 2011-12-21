@@ -37,7 +37,7 @@ class Utils extends CI_Model {
 
     //Links function
 
-    function movie_link_exists($movie_id,$link) {
+    function movie_link_exists($movie_id, $link) {
         $link = mysql_real_escape_string($link);
         $gen = $this->db->query("select movie_id from vs_links where link_url='$link' and movie_id=$movie_id ")->row();
         if (is_array($gen))
@@ -45,16 +45,16 @@ class Utils extends CI_Model {
         return true;
     }
 
-    function insert_link($movie_id,$link) {
+    function insert_link($movie_id, $link) {
         $this->db->save_queries = false;
-        $this->db->insert('vs_links', array('movie_id' => $movie_id, 'link_url' => $link));        
+        $this->db->insert('vs_links', array('movie_id' => $movie_id, 'link_url' => $link));
     }
 
     //Genre Functions
     function genre_exists($genre) {
         $genre = mysql_real_escape_string($genre);
         $gen = $this->db->query("select id from vs_genre where genre='$genre' ")->row();
-        if (is_array($gen) )
+        if (is_array($gen))
             return false;
         return true;
     }
@@ -114,24 +114,29 @@ class Utils extends CI_Model {
         $this->db->save_queries = false;
         $this->db->insert('vs_movies_actors', array('movie_id' => $movie_id, 'actor_id' => $actor_id));
     }
-    
-    
+
     //Ajax Functions
-    
-    function get_search_terms($q){
+
+    function get_search_terms($q) {
         $q = mysql_real_escape_string($q);
         return $this->db->query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
     }
-    
+
     //front functions
-    
-    function get_links($s, $page){
+
+    function get_links($s, $page) {
         $s = mysql_real_escape_string($s);
-        $low=($page-1)*10;
+        $low = $page * 10;
         $amount = 10;
         return $this->db->query("select vs_movies.movie_name, vs_links.link_url 
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s' limit $low, $amount");
+    }
+
+    function get_total_num($s) {
+        return $this->db->query("select count(*) as total
+                from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
+                where vs_movies.movie_name='$s'");
     }
 
 }

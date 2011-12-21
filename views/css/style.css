@@ -22,6 +22,8 @@
     margin-left: 20px;
     float:left;
     font-size: 20px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 #search_form{
@@ -29,14 +31,56 @@
 }
 
 #submit_image{
-margin-left: 15px;
+    margin-left: 15px;
 }
 
 #result_container{
-    margin-top: 20px;
-    border: 1px solid black;
-    height: 100px;
+    margin-top: 20px;   
     margin-left: 120px;
+}
+
+#pagination_div{
+margin-top: 15px;    
+}
+
+#pag_prev{    
+  margin-top: 3px;
+    float:left;
+    margin-left:6px;
+}
+#pag_next{
+    margin-top: 3px;
+    float:left;
+    margin-left:6px;
+}
+
+#pag_cur{
+    background-color:gray;
+    padding: 1px 6px;
+    border: 1px solid gray;
+}
+.pag_link{
+    text-align: center;
+    text-decoration: none;
+
+}
+
+.pag_nums{
+    float:left;
+    margin-left: 6px;
+    border:1px solid gray;
+    padding:0px 5px;
+ 
+    
+}
+
+.single_link{
+    color:blue;
+    text-decoration: none;
+}
+.link_indiv{
+    margin-top:10px;
+    font-size: 18px;
 }
 
 /*autocomplete rules*/

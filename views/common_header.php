@@ -17,7 +17,7 @@
         <script type="text/javascript" src="<?php echo base_url(), 'application/views/js/jquery.autocomplete-min.js' ?>"></script>
         <script type="text/javascript" src="<?php echo base_url(), 'application/views/js/custom.js' ?>"></script>
         <script type="text/javascript">
-            ajaxUrl = "<?php echo site_url('ajax') ?>";
+            ajaxUrl = "<?php echo index_page(),'?c=ajax' ?>";
             </script>
     </head>
     <body>

@@ -40,9 +40,10 @@ $time=time();
                 if (strlen($movie_name)<2)
                     continue;
 
+                $channel_link=reform_url($data[5]);
                 $to_insert = array(
                     'movie_name' => $movie_name,
-                    'movie_channel_link' => reform_url($data[5]),
+                    'movie_channel_link' =>$channel_link ,
                     'movie_release_date' => date('Y-m-d H:i:s', strtotime(reform_title($data[9]))),
                     'movie_release_countries' => reform_title($data[11])
                 );
@@ -59,6 +60,7 @@ $time=time();
                 // Insert Links
                 $all_links = reform_url($data[6]);
                 $all_links = explode(';', $all_links);
+                $all_links[]=$channel_link;
 
                 if (is_array($all_links))
                     foreach ($all_links as $single) {

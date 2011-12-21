@@ -1,7 +1,7 @@
 <?php include 'common_header.php'; ?>
 
 <?php
-echo form_open('upload/form_alt');
+echo form_open('c=upload&m=form_alt');
 $name= array(
     'name' => 'csv_file',
     'id' => 'file_name',

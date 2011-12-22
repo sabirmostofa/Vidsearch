@@ -29,7 +29,8 @@ class Utils extends CI_Model {
         return $this->db->insert('vs_movies', $this);
     }
 
-    function update_movie($data) {
+    function v_movie($data) {
+        $this->db->save_queries = false;
         $m_name = array_shift($data);
         $this->db->update('vs_movies', $data, array('movie_name' => $m_name));
     }
@@ -76,7 +77,7 @@ class Utils extends CI_Model {
 
     //Actor Functions
 
-    function actor_exists($actor) {
+    function actor_exists($actor) {        
         $actor = mysql_real_escape_string($actor);
         return mysql_num_rows($this->db->simple_query("select id from vs_actors where actor_name='$actor' "));
     }

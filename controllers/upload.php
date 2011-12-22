@@ -29,30 +29,49 @@ class Upload extends CI_Controller {
         $file = $file . '/process.csv';
         $time = time();
 
+        // Determining  the separator
+        if (($handle_test = fopen($file, "r")) !== FALSE) {
+            $line = fgets($handle_test);
+            $pos_comma = stripos($line, ',');
+            if ($pos_comma === FALSE)
+                $del = "\t";
+            $pos_tab = stripos($line, "\t");
+            if ($pos_tab === FALSE)
+                $del = ',';
+
+            if (is_int($pos_comma) && is_int($pos_tab))
+                $del = ($pos_comma < $pos_tab) ? ',' : "\t";
+
+            fclose($handle_test);
+        }
+
+
+        //Starting Main Loop
         if (($handle = fopen($file, "r")) !== FALSE) {
             $count = 0;
-            while (($data = fgetcsv($handle, 10000, ",")) !== FALSE) {
+            while (($data = fgetcsv($handle, 10000, $del)) !== FALSE) {
                 if ($count++ == 0)
                     continue;
 
+                extract(return_data_reformed($data));
 
-                $movie_name = reform_title($data[1]);
+
                 if (strlen($movie_name) < 2)
                     continue;
 
-                $channel_link = reform_url($data[5]);
+
                 $to_insert = array(
                     'movie_name' => $movie_name,
-                    'movie_channel_link' => $channel_link,
-                    'movie_release_date' => date('Y-m-d H:i:s', strtotime(reform_title($data[9]))),
-                    'movie_release_countries' => reform_title($data[11])
+                    'movie_channel_link' => $movie_channel_link,
+                    'movie_release_date' => $movie_release_date,
+                    'movie_release_countries' => $movie_release_countries
                 );
 
 
                 if (!$this->utils->movie_exists($movie_name))
                     $this->utils->insert_movie($to_insert);
-                else
-                    $this->utils->update_movie($to_insert);
+//                else
+//                    $this->utils->update_movie($to_insert);
 
                 $movie_id = (int) $this->utils->get_movie_id($movie_name);
 
@@ -63,10 +82,9 @@ class Upload extends CI_Controller {
 
 
 
-                // Insert Links
-                $all_links = reform_url($data[6]);
+                // Insert Links            
                 $all_links = explode(';', $all_links);
-                $all_links[] = $channel_link;
+                $all_links[] = $movie_channel_link;
 
                 if (is_array($all_links))
                     foreach ($all_links as $single) {
@@ -77,10 +95,7 @@ class Upload extends CI_Controller {
                         }
                     }
 
-                //Insert or Update genre
-                $genre1 = reform_title($data[2]);
-                $genre2 = reform_title($data[3]);
-                $genre3 = reform_title($data[4]);
+                //Insert or Update genre     
 
                 $all_genre = array();
                 if (strlen($genre1) > 2)
@@ -99,11 +114,11 @@ class Upload extends CI_Controller {
                 }
 
                 //Insert or Update Actors
-                $all_actors = reform_url($data[12]);
+
                 $all_actors = explode(';', $all_actors);
                 if (is_array($all_actors))
                     foreach ($all_actors as $single) {
-                        $single = substr(reform_title($single), 0, 58);
+                        $single = substr($single, 0, 58);
                         if (strlen($single) > 2) {
                             if (!$this->utils->actor_exists($single))
                                 $this->utils->insert_actor($single);
@@ -115,7 +130,7 @@ class Upload extends CI_Controller {
 
 
 
-//               if ($count > 20000)
+//               if ($count > 5)
 //                   break;
             }
             fclose($handle);

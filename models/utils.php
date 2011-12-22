@@ -107,7 +107,7 @@ class Utils extends CI_Model {
 
     function get_search_terms($q) {
         $q = mysql_real_escape_string($q);
-        return $this->db->simple_query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
+        return $this->db->query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
     }
 
     //front functions
@@ -116,14 +116,14 @@ class Utils extends CI_Model {
         $s = mysql_real_escape_string($s);
         $low = $start;
         $amount = 10;
-        return $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
+        return $this->db->query("select vs_movies.movie_name, vs_links.link_url 
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s' limit $low, $amount");
     }
 
     function get_total_num($s) {
         $s = mysql_real_escape_string($s);
-        return $this->db->simple_query("select count(*) as total
+        return $this->db->query("select count(*) as total
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");
     }

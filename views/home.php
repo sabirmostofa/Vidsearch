@@ -23,6 +23,7 @@
                         else $cur_page = 0;
                         
                         $start= $cur_page+1;
+                        $start=  $total_num == 0?0:$start;
                         $end= $start+9;
                         $end = $end>$total_num? $total_num:$end;
                         

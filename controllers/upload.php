@@ -27,49 +27,53 @@ class Upload extends CI_Controller {
         $this->load->model('utils', '', true);
         $file = dirname(dirname(dirname(__FILE__)));
         $file = $file . '/process.csv';
-$time=time();
+        $time = time();
 
         if (($handle = fopen($file, "r")) !== FALSE) {
             $count = 0;
             while (($data = fgetcsv($handle, 10000, ",")) !== FALSE) {
                 if ($count++ == 0)
                     continue;
-                $data_real = $data;
-          
+
 
                 $movie_name = reform_title($data[1]);
-                if (strlen($movie_name)<2)
+                if (strlen($movie_name) < 2)
                     continue;
 
-                $channel_link=reform_url($data[5]);
+                $channel_link = reform_url($data[5]);
                 $to_insert = array(
                     'movie_name' => $movie_name,
-                    'movie_channel_link' =>$channel_link ,
+                    'movie_channel_link' => $channel_link,
                     'movie_release_date' => date('Y-m-d H:i:s', strtotime(reform_title($data[9]))),
                     'movie_release_countries' => reform_title($data[11])
                 );
+
 
                 if (!$this->utils->movie_exists($movie_name))
                     $this->utils->insert_movie($to_insert);
                 else
                     $this->utils->update_movie($to_insert);
 
-                $movie_id = $this->utils->get_movie_id($movie_name);
-                if(!is_int($movie_id))continue;
+                $movie_id = (int) $this->utils->get_movie_id($movie_name);
 
-              
+
+
+                if ($movie_id == 0)
+                    continue;
+
+
 
                 // Insert Links
                 $all_links = reform_url($data[6]);
                 $all_links = explode(';', $all_links);
-                $all_links[]=$channel_link;
+                $all_links[] = $channel_link;
 
                 if (is_array($all_links))
                     foreach ($all_links as $single) {
                         $single = trim($single);
-                        if (strlen($single) > 10 && strlen($single) <200) {
+                        if (strlen($single) > 10 && strlen($single) < 200) {
                             if (!$this->utils->movie_link_exists($movie_id, $single))
-                                $this->utils->insert_link($movie_id,$single);
+                                $this->utils->insert_link($movie_id, $single);
                         }
                     }
 
@@ -80,11 +84,11 @@ $time=time();
 
                 $all_genre = array();
                 if (strlen($genre1) > 2)
-                    $all_genre[] = substr ($genre1,0,40);
+                    $all_genre[] = substr($genre1, 0, 40);
                 if (strlen($genre2) > 2)
-                    $all_genre[] = substr ($genre1,0,40);
+                    $all_genre[] = substr($genre1, 0, 40);
                 if (strlen($genre3) > 2)
-                    $all_genre[] = substr ($genre1,0,40);
+                    $all_genre[] = substr($genre1, 0, 40);
 
                 foreach ($all_genre as $single) {
                     if (!$this->utils->genre_exists($single))
@@ -99,7 +103,7 @@ $time=time();
                 $all_actors = explode(';', $all_actors);
                 if (is_array($all_actors))
                     foreach ($all_actors as $single) {
-                        $single = substr(reform_title($single), 0, 58 );
+                        $single = substr(reform_title($single), 0, 58);
                         if (strlen($single) > 2) {
                             if (!$this->utils->actor_exists($single))
                                 $this->utils->insert_actor($single);
@@ -115,8 +119,8 @@ $time=time();
 //                   break;
             }
             fclose($handle);
-            $time_last=time();
-            var_dump(($time_last -$time));
+            $time_last = time();
+            var_dump(($time_last - $time));
         }
     }
 

@@ -8,16 +8,15 @@ class Utils extends CI_Model {
 
     function movie_exists($movie_name) {
         $movie_name = mysql_real_escape_string($movie_name);
-        $movie = $this->db->query("select movie_id from vs_movies where movie_name='$movie_name' ")->row();
-        if (is_array($movie))
-            return false;
-        return true;
+        return mysql_num_rows($this->db->simple_query("select movie_id from vs_movies where movie_name='$movie_name' "));
     }
 
     function get_movie_id($movie_name) {
         $movie_name = mysql_real_escape_string($movie_name);
-        $movie = $this->db->query("select movie_id from vs_movies where movie_name='$movie_name' ")->row();
-        return $movie->movie_id;
+        $res = $this->db->simple_query("select movie_id from vs_movies where movie_name='$movie_name' ");
+        if (mysql_num_rows($res) == 0)
+            return false;
+        return mysql_result($res, 0);
     }
 
     function insert_movie($data) {
@@ -39,10 +38,7 @@ class Utils extends CI_Model {
 
     function movie_link_exists($movie_id, $link) {
         $link = mysql_real_escape_string($link);
-        $gen = $this->db->query("select movie_id from vs_links where link_url='$link' and movie_id=$movie_id ")->row();
-        if (is_array($gen))
-            return false;
-        return true;
+        return mysql_num_rows($this->db->simple_query("select movie_id from vs_links where link_url='$link' and movie_id=$movie_id "));
     }
 
     function insert_link($movie_id, $link) {
@@ -53,10 +49,7 @@ class Utils extends CI_Model {
     //Genre Functions
     function genre_exists($genre) {
         $genre = mysql_real_escape_string($genre);
-        $gen = $this->db->query("select id from vs_genre where genre='$genre' ")->row();
-        if (is_array($gen))
-            return false;
-        return true;
+        return mysql_num_rows($this->db->simple_query("select id from vs_genre where genre='$genre' "));
     }
 
     function insert_genre($genre) {
@@ -66,15 +59,14 @@ class Utils extends CI_Model {
 
     function get_genre_id($genre) {
         $genre = mysql_real_escape_string($genre);
-        $gen = $this->db->query("select id from vs_genre where genre='$genre' ")->row();
-        return $gen->id;
+        $res = $this->db->simple_query("select id from vs_genre where genre='$genre' ");
+        if (mysql_num_rows($res) == 0)
+            return false;
+        return mysql_result($res, 0);
     }
 
     function has_genre_movie($movie_id, $genre_id) {
-        $gen = $this->db->query("select movie_id from vs_movies_genre where movie_id=$movie_id and genre_id= $genre_id")->row();
-        if (is_array($gen))
-            return false;
-        return true;
+        return mysql_num_rows($this->db->simple_query("select movie_id from vs_movies_genre where movie_id=$movie_id and genre_id= $genre_id"));
     }
 
     function insert_rel_genre($movie_id, $genre_id) {
@@ -86,10 +78,7 @@ class Utils extends CI_Model {
 
     function actor_exists($actor) {
         $actor = mysql_real_escape_string($actor);
-        $gen = $this->db->query("select id from vs_actors where actor_name='$actor' ")->row();
-        if (is_array($gen))
-            return false;
-        return true;
+        return mysql_num_rows($this->db->simple_query("select id from vs_actors where actor_name='$actor' "));
     }
 
     function insert_actor($actor) {
@@ -99,15 +88,14 @@ class Utils extends CI_Model {
 
     function get_actor_id($actor) {
         $actor = mysql_real_escape_string($actor);
-        $gen = $this->db->query("select id from vs_actors where actor_name='$actor' ")->row();
-        return $gen->id;
+        $res = $this->db->simple_query("select id from vs_actors where actor_name='$actor' ");
+        if (mysql_num_rows($res) == 0)
+            return false;
+        return mysql_result($res, 0);
     }
 
     function has_actor_movie($movie_id, $actor_id) {
-        $gen = $this->db->query("select movie_id from vs_movies_actors where movie_id=$movie_id and actor_id= $actor_id")->row();
-        if (is_array($gen))
-            return false;
-        return true;
+        return mysql_num_rows($this->db->simple_query("select movie_id from vs_movies_actors where movie_id=$movie_id and actor_id= $actor_id"));
     }
 
     function insert_rel_actor($movie_id, $actor_id) {
@@ -119,7 +107,7 @@ class Utils extends CI_Model {
 
     function get_search_terms($q) {
         $q = mysql_real_escape_string($q);
-        return $this->db->query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
+        return $this->db->simple_query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
     }
 
     //front functions
@@ -128,14 +116,14 @@ class Utils extends CI_Model {
         $s = mysql_real_escape_string($s);
         $low = $start;
         $amount = 10;
-        return $this->db->query("select vs_movies.movie_name, vs_links.link_url 
+        return $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s' limit $low, $amount");
     }
 
     function get_total_num($s) {
         $s = mysql_real_escape_string($s);
-        return $this->db->query("select count(*) as total
+        return $this->db->simple_query("select count(*) as total
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");
     }

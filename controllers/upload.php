@@ -48,7 +48,7 @@ class Upload extends CI_Controller {
 
         //Starting Main Loop
         if (($handle = fopen($file, "r")) !== FALSE) {
-            $count = 0;
+            $count = 0; $link_count=0;
             while (($data = fgetcsv($handle, 10000, $del)) !== FALSE) {
                 if ($count++ == 0)
                     continue;
@@ -90,8 +90,10 @@ class Upload extends CI_Controller {
                     foreach ($all_links as $single) {
                         $single = trim($single);
                         if (strlen($single) > 10 && strlen($single) < 200) {
-                            if (!$this->utils->movie_link_exists($movie_id, $single))
+                            if (!$this->utils->movie_link_exists($movie_id, $single)){
                                 $this->utils->insert_link($movie_id, $single);
+                                $link_count++;
+                            }
                         }
                     }
 
@@ -135,7 +137,8 @@ class Upload extends CI_Controller {
             }
             fclose($handle);
             $time_last = time();
-            var_dump(($time_last - $time));
+            $t_time=($time_last-$time)/60;
+            $this->load->view('parse_result',array('t_time'=>$t_time, 'num_links' => $link_count));
         }
     }
 

@@ -17,6 +17,8 @@ class Upload extends CI_Controller {
         var_dump($_POST);
         var_dump($_FILES);
     }
+    
+ 
 
     public function form_alt() {
         set_time_limit(3600);
@@ -99,36 +101,36 @@ class Upload extends CI_Controller {
 
                 //Insert or Update genre     
 
-                $all_genre = array();
-                if (strlen($genre1) > 2)
-                    $all_genre[] = substr($genre1, 0, 40);
-                if (strlen($genre2) > 2)
-                    $all_genre[] = substr($genre1, 0, 40);
-                if (strlen($genre3) > 2)
-                    $all_genre[] = substr($genre1, 0, 40);
-
-                foreach ($all_genre as $single) {
-                    if (!$this->utils->genre_exists($single))
-                        $this->utils->insert_genre($single);
-                    $genre_id = $this->utils->get_genre_id($single);
-                    if (!$this->utils->has_genre_movie($movie_id, $genre_id))
-                        $this->utils->insert_rel_genre($movie_id, $genre_id);
-                }
+//                $all_genre = array();
+//                if (strlen($genre1) > 2)
+//                    $all_genre[] = substr($genre1, 0, 40);
+//                if (strlen($genre2) > 2)
+//                    $all_genre[] = substr($genre1, 0, 40);
+//                if (strlen($genre3) > 2)
+//                    $all_genre[] = substr($genre1, 0, 40);
+//
+//                foreach ($all_genre as $single) {
+//                    if (!$this->utils->genre_exists($single))
+//                        $this->utils->insert_genre($single);
+//                    $genre_id = $this->utils->get_genre_id($single);
+//                    if (!$this->utils->has_genre_movie($movie_id, $genre_id))
+//                        $this->utils->insert_rel_genre($movie_id, $genre_id);
+//                }
 
                 //Insert or Update Actors
 
-                $all_actors = explode(';', $all_actors);
-                if (is_array($all_actors))
-                    foreach ($all_actors as $single) {
-                        $single = substr($single, 0, 58);
-                        if (strlen($single) > 2) {
-                            if (!$this->utils->actor_exists($single))
-                                $this->utils->insert_actor($single);
-                            $actor_id = $this->utils->get_actor_id($single);
-                            if (!$this->utils->has_actor_movie($movie_id, $genre_id))
-                                $this->utils->insert_rel_actor($movie_id, $genre_id);
-                        }
-                    }
+//                $all_actors = explode(';', $all_actors);
+//                if (is_array($all_actors))
+//                    foreach ($all_actors as $single) {
+//                        $single = substr($single, 0, 58);
+//                        if (strlen($single) > 2) {
+//                            if (!$this->utils->actor_exists($single))
+//                                $this->utils->insert_actor($single);
+//                            $actor_id = $this->utils->get_actor_id($single);
+//                            if (!$this->utils->has_actor_movie($movie_id, $genre_id))
+//                                $this->utils->insert_rel_actor($movie_id, $genre_id);
+//                        }
+//                    }
 
 
 

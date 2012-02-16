@@ -2,12 +2,14 @@
 class Cron extends CI_Controller {
     
     public function index(){
+        $this->load->helper('utils');
+        $this->load->model('utils', '', true);
         $base_url = 'http://www.1channel.ch';
         $url = 'main.html';
         
         $dom = new DOMDocument();
        $content = file_get_contents($url);       
-        $dom->loadHTML($content);
+        @$dom->loadHTML($content);
         
      
         
@@ -45,7 +47,8 @@ class Cron extends CI_Controller {
                 
                $mov_url = $base_url. $div->getElementsByTagName('a')->item(0)->getAttribute('href');
                $mov_dom = new DOMDocument();
-               $mov_dom -> loadHTML( file_get_contents($mov_url) );
+               $mov_url = 'movie.html';
+               @$mov_dom -> loadHTML( file_get_contents($mov_url) );
                
                //getting title
                foreach($mov_dom ->getElementsByTagName('meta') as $meta )
@@ -74,14 +77,24 @@ class Cron extends CI_Controller {
                             break;
                             
                         case 'movie_version_link':
-                            foreach( $span->getElementsByTagName('a') as $a )
-                                 preg_match( '//',$a->getAttribute('href'), $link);
+                            foreach( $span->getElementsByTagName('a') as $a ){
+                                 if(preg_match( '/(?<=&url).*?(?=&domain)/',$a->getAttribute('href'), $link)){
+                            $link_a = ltrim( $link[0], '=' );
+                            $m_links[] = base64_decode($link_a);
+                                 }else{
+                                     $m_links[]=$a->getAttribute('href');
+                                 }
+                            }
                             break;
                       
                        endswitch;
                        
                        
                    endforeach;
+                   
+                   var_dump($m_genres);
+                   var_dump($m_actors);
+                   var_dump($m_links);
              
             }
             

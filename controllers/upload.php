@@ -86,7 +86,7 @@ class Upload extends CI_Controller {
 
                 // Insert Links            
                 $all_links = explode(';', $all_links);
-                $all_links[] = $movie_channel_link;
+                //$all_links[] = $movie_channel_link;
 
                 if (is_array($all_links))
                     foreach ($all_links as $single) {

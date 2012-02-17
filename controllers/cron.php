@@ -2,6 +2,7 @@
 class Cron extends CI_Controller {
     
     public function index(){
+        set_time_limit(300);
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
         $base_url = 'http://www.1channel.ch';
@@ -45,9 +46,9 @@ class Cron extends CI_Controller {
                
             if( $div->getAttribute('class') == 'index_item index_item_ie' ){
                 
-               $mov_url = $base_url. $div->getElementsByTagName('a')->item(0)->getAttribute('href');
+               echo $mov_url = $base_url. $div->getElementsByTagName('a')->item(0)->getAttribute('href');
                $mov_dom = new DOMDocument();
-               $mov_url = 'movie.html';
+               
                @$mov_dom -> loadHTML( file_get_contents($mov_url) );
                
                //getting title
@@ -92,15 +93,41 @@ class Cron extends CI_Controller {
                        
                    endforeach;
                    
-                   var_dump($m_genres);
-                   var_dump($m_actors);
-                   var_dump($m_links);
+                  // var_dump($m_genres);
+                  // var_dump($m_actors);
+                  // var_dump($m_links);
+                   
+                   //Inserting into the databse tables
+                        $to_insert = array(
+                    'movie_name' => $m_title,
+                    'movie_channel_link' => '',
+                    'movie_release_date' => '',
+                    'movie_release_countries' => ''
+                );
+                   
+                   if (!$this->utils->movie_exists($m_title))
+                    $this->utils->insert_movie($to_insert);
+                   
+                       $movie_id = (int) $this->utils->get_movie_id($m_title);
+
+                if ($movie_id == 0)
+                    continue;
+                
+                      foreach ($m_links as $single) {
+                        $single = trim($single);
+                        if (strlen($single) > 10 && strlen($single) < 200) {
+                            if (!$this->utils->movie_link_exists($movie_id, $single)){
+                                $this->utils->insert_link($movie_id, $single);
+                                
+                            }
+                        }
+                    }
              
             }
             
             }
             
-            exit;
+            //exit;
         endfor;
         
     }

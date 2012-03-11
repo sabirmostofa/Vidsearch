@@ -62,4 +62,30 @@ function return_data_reformed($data) {
     
 }
 
+
+function valid_single_link($link){
+    if( stripos($link, 'http://') === false)
+            return;
+    
+    // all domains to avoid
+    $invalid_domains = array(
+        'affbuzzads.com'
+        
+    );
+    
+    foreach($invalid_domains as $dom){
+        if(stripos($link, $dom) !== false )
+                return;
+    }
+    
+   if( $response = http_get($link, array("timeout"=>1), $info)){
+       
+   }else return;
+    
+    
+    
+    return true;
+    
+}
+
 ?>

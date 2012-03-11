@@ -83,6 +83,7 @@ class Cron extends CI_Controller {
                             $link_a = ltrim( $link[0], '=' );
                             $m_links[] = base64_decode($link_a);
                                  }else{
+                                   
                                      $m_links[]=$a->getAttribute('href');
                                  }
                             }
@@ -117,7 +118,8 @@ class Cron extends CI_Controller {
                         $single = trim($single);
                         if (strlen($single) > 10 && strlen($single) < 200) {
                             if (!$this->utils->movie_link_exists($movie_id, $single)){
-                                $this->utils->insert_link($movie_id, $single);
+                                if($this->utils->valid_single_link($single))
+                                    $this->utils->insert_link($movie_id, $single);
                                 
                             }
                         }

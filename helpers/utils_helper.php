@@ -64,24 +64,53 @@ function return_data_reformed($data) {
 
 
 function valid_single_link($link){
-    if( stripos($link, 'http://') === false)
+    if( stripos($link, 'http://') === false){
+        //echo 'http not foound';
             return;
+    }
     
     // all domains to avoid
     $invalid_domains = array(
-        'affbuzzads.com'
-        
+        'affbuzzads.com'        
     );
     
     foreach($invalid_domains as $dom){
-        if(stripos($link, $dom) !== false )
+        if( stripos($link, $dom) !== false ){
+              //echo 'invalid domain';
                 return;
+        }
     }
     
-   if( $response = http_get($link, array("timeout"=>1), $info)){
-       
-   }else return;
+  // checking if video exists from http code
     
+    $ch = curl_init();
+
+// set URL and other appropriate options
+curl_setopt($ch, CURLOPT_URL, $link);
+curl_setopt($ch, CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+
+// grab URL and pass it to the browser
+$response = curl_exec($ch);
+if( !$response ){
+     // echo 'no data found in curl';
+    return;
+}
+
+// close cURL resource, and free up system resources
+curl_close($ch);
+
+
+$pos = stripos($response, "\n");
+
+preg_match( '/\s\d+/' , substr($response, 0, $pos), $res_code);
+$res_code_mod =  trim($res_code[0]);
+
+if($res_code_mod != 200){
+      //echo 'http code prob';
+    return;
+}  
     
     
     return true;

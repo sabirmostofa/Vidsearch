@@ -116,20 +116,24 @@ class Cron extends CI_Controller {
                 
                       foreach ($m_links as $single) {
                         $single = trim($single);
-                        if (strlen($single) > 10 && strlen($single) < 200) {
-                            if (!$this->utils->movie_link_exists($movie_id, $single)){
-                                if($this->utils->valid_single_link($single))
-                                    $this->utils->insert_link($movie_id, $single);
-                                
+                        if( !valid_single_link($single) )
+                        {
+                           
+                            continue;
+                            
                             }
-                        }
+                   
+                            if (!$this->utils->movie_link_exists($movie_id, $single)){                                
+                                    $this->utils->insert_link($movie_id, $single);                                
+                            }
+                        
                     }
              
             }
             
             }
             
-            //exit;
+            exit;
         endfor;
         
     }

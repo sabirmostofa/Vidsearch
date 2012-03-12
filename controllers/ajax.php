@@ -27,9 +27,11 @@ class Ajax extends CI_Controller {
          $this->load->helper('url');
         $this->load->helper('html');
         $this->load->helper('form');
+        
         $this->load->model('utils', '', true);
         //var_dump($_GET['link_id']);
         $link_id = $this->input->get('link_id');
+        $this->utils->add_report($link_id);
         exit;
         
     }

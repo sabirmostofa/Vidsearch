@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * Use simple_query to avoid the memory consumption of the the codeigniter. If using simple query only the resource will be
+ * returned. In case you are using query method it will return the CI query object
+ * 
+ * 
+ */
+
 class Utils extends CI_Model {
 
     function __construct() {
@@ -127,6 +134,25 @@ class Utils extends CI_Model {
         return $this->db->query("select count(*) as total
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");
+    }
+    
+    //get total links for cron cleanup
+    
+    function get_total_links(){
+        return $this->db->simple_query("select count(*) 
+                from  vs_links");
+        
+    }
+    
+    //return  100 links for db clean
+    
+    function get_links_partial($start, $limit){
+        return $this->db->simple_query(" select * from vs_links limit $start , $limit ");
+    }
+    
+    //
+    function delete_single_link($link_id){        
+        return $this->db->simple_query("delete from vs_links where link_id= $link_id ");
     }
 
 }

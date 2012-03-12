@@ -50,6 +50,7 @@ class Utils extends CI_Model {
     }
 
     function insert_link($movie_id, $link) {
+        $this->db->reconnect();
         $this->db->save_queries = false;
         $this->db->insert('vs_links', array('movie_id' => $movie_id, 'link_url' => $link));
     }
@@ -158,6 +159,27 @@ class Utils extends CI_Model {
     //function update a report count
     function add_report($link_id){        
          return $this->db->simple_query("update vs_links set report_count=report_count+1 where link_id = $link_id ");
+    }
+    
+        //function get report count
+    function get_report_count($link_id){        
+       $data = mysql_fetch_assoc( $this->db->simple_query("select report_count from vs_links where link_id = $link_id "));
+         return $data['report_count'];
+    }
+    
+    //function for adding to not_found column
+    function add_to_not_found($link_id){   
+        $this->db->reconnect();
+         return $this->db->simple_query("update vs_links set not_found=not_found+1 where link_id = $link_id ");
+    }
+    //function for clearing the not found column
+    function clear_not_found($link_id){        
+         return $this->db->simple_query("update vs_links set not_found=0 where link_id = $link_id ");
+    }
+    //function for getting the not_found column
+    function get_not_found($link_id){        
+       $data = mysql_fetch_assoc( $this->db->simple_query("select not_found from vs_links where link_id = $link_id "));
+         return $data['not_found'];
     }
 
 }

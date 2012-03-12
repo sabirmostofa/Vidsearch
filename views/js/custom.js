@@ -44,4 +44,39 @@ $(document).ready(function(){
                 
     })
     
+    //Link reporting as Dead
+    $('.report a').click(function(e){
+         e.preventDefault();
+         var link_id=$(this).attr('id');
+       
+         
+         var report_ajax_url = ajaxUrl+'&m=report_link';
+        
+         
+         
+         //report using ajax
+         
+                 $.ajax({
+            
+            type :  "get",
+            url : report_ajax_url,
+            timeout : 5000,           
+            data : {
+                'action' : 'report_data',
+                'link_id' : link_id
+              
+            },
+            success :  function(data){
+                alert(data);
+            }
+            
+        } )
+              
+         
+  
+         
+        
+        
+    })
+    
 })

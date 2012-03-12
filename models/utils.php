@@ -124,7 +124,7 @@ class Utils extends CI_Model {
         $s = mysql_real_escape_string($s);
         $low = $start;
         $amount = 10;
-        return $this->db->query("select vs_movies.movie_name, vs_links.link_url 
+        return $this->db->query("select vs_movies.movie_name, vs_links.link_url,vs_links.link_id 
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s' limit $low, $amount");
     }
@@ -153,6 +153,11 @@ class Utils extends CI_Model {
     //
     function delete_single_link($link_id){        
         return $this->db->simple_query("delete from vs_links where link_id= $link_id ");
+    }
+    
+    //function update a report count
+    function add_report($link_id){        
+         return $this->db->simple_query("update vs_links set report_count=report_count+1 where link_id = $link_id ");
     }
 
 }

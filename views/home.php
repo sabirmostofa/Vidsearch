@@ -35,7 +35,11 @@
                         <?php if(isset($data))foreach($data as $single):?>
                         <div class="grid_8 link_indiv">
                           <b><?php echo $start++ ?>.</b>  <a class="single_link" href="<?php echo $single->link_url ?>"><b><?php echo $single->movie_name ?></b></a>
+                          <div class="report">
+                                <a href="#" id="<?php echo $single->link_id ?>">Report as dead</a>
+                                </div>
                             <br/>
+                            
                             <div style="margin-left:25px"><b>Link:</b> <a  class="single_link" href="<?php echo $single->link_url ?>"><?php echo $single->link_url?></a></div> 
                             
                             </div>

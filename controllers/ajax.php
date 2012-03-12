@@ -21,6 +21,18 @@ class Ajax extends CI_Controller {
         }";
         exit;
     }
+    
+    
+    public function report_link(){
+         $this->load->helper('url');
+        $this->load->helper('html');
+        $this->load->helper('form');
+        $this->load->model('utils', '', true);
+        //var_dump($_GET['link_id']);
+        $link_id = $this->input->get('link_id');
+        exit;
+        
+    }
 
 }
 

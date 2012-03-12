@@ -125,7 +125,7 @@ class Cron extends CI_Controller {
         endfor;
     }
 
-    // function to remove the  old urls as cron 
+    // function to remove the  obsolete urls as cron 
     public function cleanup() {
         set_time_limit(300);
         $this->load->helper('utils');
@@ -143,9 +143,8 @@ class Cron extends CI_Controller {
             while ($res_ar = mysql_fetch_assoc($res)) {
 
                 $link = $res_ar['link_url'];
-                echo $link_id = $res_ar['link_id'];
-                echo '<br/>';
-                continue;
+                $link_id = $res_ar['link_id'];    
+                
 
                 if (!video_still_exists($link))
                     $this->utils->delete_single_link($link_id);

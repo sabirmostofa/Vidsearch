@@ -181,6 +181,19 @@ class Utils extends CI_Model {
        $data = mysql_fetch_assoc( $this->db->simple_query("select not_found from vs_links where link_id = $link_id "));
          return $data['not_found'];
     }
+    
+    // API functions
+    
+    function api_get_links($start, $limit){
+                $res =  $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
+                        from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
+                 limit $start, $limit");
+                
+                while($d=mysql_fetch_assoc($res)){
+                    $data[]=$d;
+                }
+        return $data;
+    }
 
 }
 

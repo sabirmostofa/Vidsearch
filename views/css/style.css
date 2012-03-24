@@ -87,6 +87,38 @@ margin-top: 15px;
     float:right;
 }
 
+.upvote{
+    display: inline-block;
+    width:50px;
+    cursor: pointer;
+   
+    height:25px;
+        float:left;
+        background-image: url(../images/tud.png);
+        background-position: 0 0;
+ 
+       
+        
+    
+}
+.downvote{
+    display: inline-block;
+       width:50px;
+       height:25px;
+       cursor: pointer;
+       
+     
+        float:left;
+        background-image: url(../images/tud.png);
+        background-position:50px 0;
+   
+}
+
+.votecount{
+    
+    float:left;
+}
+
 /*autocomplete rules*/
 
 .autocomplete-w1 { background:url(../images/shadow.png) no-repeat bottom right; position:absolute; top:0px; left:0px; margin:6px 0 0 6px; /* IE6 fix: */ _background:none; _margin:1px 0 0 0; }

@@ -11,8 +11,9 @@
 <html>
        <head>
         <title>VidSearch</title>
+        
+        <?php echo link_tag('application/views/css/960.css'); ?>
         <?php echo link_tag('application/views/css/style.css'); ?> 
-        <?php echo link_tag('application/views/css/960.css'); ?>               
         <script type="text/javascript" src="<?php echo base_url(), 'application/views/js/jquery-1.6.2.min.js' ?>"></script>
         <script type="text/javascript" src="<?php echo base_url(), 'application/views/js/jquery.autocomplete-min.js' ?>"></script>
         <script type="text/javascript" src="<?php echo base_url(), 'application/views/js/custom.js' ?>"></script>

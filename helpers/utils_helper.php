@@ -95,6 +95,16 @@ function video_still_exists($link) {
         //echo 'http code prob';
         return;
     }
+    
+    //if the video has been removed
+    
+    $messages = array(
+       'This file doesn\'t exist, or has been removed.'        
+    );
+    
+    foreach($messages as $single)
+        if(stripos($reponse, $single) !== false)
+                return;
 
     return true;
 }
@@ -102,6 +112,7 @@ function video_still_exists($link) {
 function valid_single_link($link) {
     if (stripos($link, 'http://') === false) {
         //echo 'http not foound';
+        if( stripos($link, 'https://') === false )
         return;
     }
 

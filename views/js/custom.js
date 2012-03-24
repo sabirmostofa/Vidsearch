@@ -74,16 +74,16 @@ $(document).ready(function(){
         var ar= prev_data.split('-');
         
          
-        for(var x in ar){
-          
-            if( ar[Number(x)]== link_id){
-                $(this).text('Reported');
-                break;
-                 
-            }
-             
-             
-        }  
+//        for(var x in ar){
+//          
+//            if( ar[Number(x)]== link_id){
+//                $(this).text('Reported');
+//                break;
+//                 
+//            }
+//             
+//             
+//        }  
     
     
     })

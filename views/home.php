@@ -27,6 +27,10 @@
                         $end= $start+9;
                         $end = $end>$total_num? $total_num:$end;
                         
+                        $upvote = 0;
+                        $downvote =0;
+               
+                        
                             
 ?>
                         
@@ -36,7 +40,10 @@
                         <div class="grid_8 link_indiv">
                           <b><?php echo $start++ ?>.</b>  <a class="single_link" href="<?php echo $single->link_url ?>"><b><?php echo $single->movie_name ?></b></a>
                           <div class="report">
-                                <a href="#" id="<?php echo $single->link_id ?>">Report as dead</a>
+                                <a class="upvote"  url="#" id="up<?php echo $single->link_id ?>"></a>
+                               <span class="votecount"> (<?php echo $upvote ?>)</span>
+                                <a  class="downvote" url="#"  id="down<?php echo $single->link_id ?>"></a>
+                                <span class="votecount"> (<?php echo $downvote ?>)</span>
                                 </div>
                             <br/>
                             

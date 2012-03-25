@@ -109,38 +109,46 @@ $(document).ready(function(){
     
     //subimit form action
     
-    $("#tut_submit").click(function(e){
-        e.preventDefault();
-        
-        var courseId = $('#select_course').val();
-        var courseName = $('#select_course option:selected').text();
-        var batchId = $('#course_batch').val();
-        //Getting content using ajax
-        $.ajax({
-            
-            type :  "post",
-            url : ajaxUrl,
-            timeout : 5000,           
-            data : {
-                'action' : 'get_table_data',
-                'course_id' : courseId,
-                'course_name': courseName,
-                'batch_id': batchId
-            },
-            success :  function(data){
-                alert(data);
-            }
-            
-        } )
-                
-    })
+//    $("#tut_submit").click(function(e){
+//        e.preventDefault();
+//        
+//        var courseId = $('#select_course').val();
+//        var courseName = $('#select_course option:selected').text();
+//        var batchId = $('#course_batch').val();
+//        //Getting content using ajax
+//        $.ajax({
+//            
+//            type :  "post",
+//            url : ajaxUrl,
+//            timeout : 5000,           
+//            data : {
+//                'action' : 'get_table_data',
+//                'course_id' : courseId,
+//                'course_name': courseName,
+//                'batch_id': batchId
+//            },
+//            success :  function(data){
+//                alert(data);
+//            }
+//            
+//        } )
+//                
+//    })
     
     //Link reporting as Dead
     $('.report a').click(function(e){
         var this_link = $(this);
         e.preventDefault();
-        var link_id=$(this).attr('id');
-         
+        var link_id_main=$(this).attr('id');
+        
+        var rew=/[a-z]+/;
+        var red=/\d+/;
+        
+      var action =  rew.exec(link_id_main);
+       var link_id = red.exec(link_id_main);
+        
+        
+       
         if(docCookies.hasItem('vs_data'))
             var prev_data = docCookies.getItem('vs_data');
         else 
@@ -180,7 +188,9 @@ $(document).ready(function(){
             timeout : 5000,           
             data : {
                 'action' : 'report_data',
-                'link_id' : link_id
+                'link_id' : link_id,
+                'todo': action
+                
               
             },
             success :  function(data){

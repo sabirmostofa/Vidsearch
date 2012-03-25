@@ -156,9 +156,31 @@ class Utils extends CI_Model {
         return $this->db->simple_query("delete from vs_links where link_id= $link_id ");
     }
     
+    
+    //insert into invalid link
+    function insert_invalid_link($link_url){
+        $this->db->save_queries = false;
+        if(mysql_fetch_assoc ($this->db->simple_query("select * from vs_invalid_links where link_url= $link_url") === FALSE))
+         $this->db->insert('vs_invalid_links', array( 'link_url' => $link));
+        
+    }
+    
+    //check if the link is invalid
+    function is_invalid_link($link_url){
+       if(mysql_fetch_assoc ($this->db->simple_query("select * from vs_invalid_links where link_url= $link_url")))
+               return 0;
+       
+       return 1;
+        
+    }
+    
     //function update a report count
     function add_report($link_id){        
          return $this->db->simple_query("update vs_links set report_count=report_count+1 where link_id = $link_id ");
+    }
+    
+     function add_up($link_id){        
+         return $this->db->simple_query("update vs_links set like_count=like_count+1 where link_id = $link_id ");
     }
     
         //function get report count

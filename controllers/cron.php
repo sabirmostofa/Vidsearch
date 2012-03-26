@@ -7,10 +7,10 @@ class Cron extends CI_Controller {
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
         $base_url = 'http://www.1channel.ch';
-        $url = 'main.html';
+        //$url = 'main.html';
 
         $dom = new DOMDocument();
-        $content = file_get_contents($url);
+        $content = file_get_contents($base_url);
         @$dom->loadHTML($content);
 
 
@@ -23,7 +23,7 @@ class Cron extends CI_Controller {
                     $pag[] = $val[0];
                 }
 
-                echo $max_page = array_pop($pag);
+                $max_page = array_pop($pag);
             }
         }// endforeach
         //Getting all pages
@@ -33,7 +33,7 @@ class Cron extends CI_Controller {
                 $base = 'http://www.1channel.ch/index.php?page=';
                 $page = $base . $i;
                 $content = file_get_contents($page);
-                $dom->loadHTML($content);
+                @$dom->loadHTML($content);
             }
 
             foreach ($dom->getElementsByTagName('div') as $div) {
@@ -124,7 +124,7 @@ class Cron extends CI_Controller {
                 }
             }
 
-           // exit;
+            exit;
         endfor;
     }// endof cron parser
 

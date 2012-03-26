@@ -103,7 +103,7 @@ function video_still_exists($link) {
     );
     
     foreach($messages as $single)
-        if(stripos($reponse, $single) !== false)
+        if(stripos($response, $single) !== false)
                 return;
 
     return true;

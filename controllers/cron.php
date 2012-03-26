@@ -3,7 +3,7 @@
 class Cron extends CI_Controller {
 
     public function index() {
-        set_time_limit(300);
+        set_time_limit(4*3600);
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
         $base_url = 'http://www.1channel.ch';
@@ -40,7 +40,7 @@ class Cron extends CI_Controller {
 
                 if ($div->getAttribute('class') == 'index_item index_item_ie') {
 
-                    echo $mov_url = $base_url . $div->getElementsByTagName('a')->item(0)->getAttribute('href');
+                    $mov_url = $base_url . $div->getElementsByTagName('a')->item(0)->getAttribute('href');
                     $mov_dom = new DOMDocument();
 
                     @$mov_dom->loadHTML(file_get_contents($mov_url));
@@ -50,7 +50,7 @@ class Cron extends CI_Controller {
                         if ($meta->getAttribute('property') == 'og:title')
                             $m_title = $meta->getAttribute('content');
 
-                    echo $m_title, '<br/>';
+                    //echo $m_title, '<br/>';
 
                     $m_genres = array();
                     $m_actors = array();
@@ -107,6 +107,7 @@ class Cron extends CI_Controller {
                     if ($movie_id == 0)
                         continue;
 
+                    $link_inserted=0;
                     foreach ($m_links as $single) {
                         $single = trim($single);
                         
@@ -119,6 +120,7 @@ class Cron extends CI_Controller {
                                 continue;
 
                             $this->utils->insert_link($movie_id, $single);
+                            $link_inserted++;
                         }
                     }
                 }
@@ -126,6 +128,9 @@ class Cron extends CI_Controller {
 
             //exit;
         endfor;
+        
+        echo "New Links: $link_inserted";
+        
     }// endof cron parser
 
     // function to remove the  obsolete urls as cron 
@@ -155,11 +160,11 @@ class Cron extends CI_Controller {
                     $this->utils->clear_not_found($link_id);
 
 
-                //delete if not founded more than consecutive 5 times
+                //delete if not founded more than consecutive 10 times
                 if ($this->utils->get_not_found($link_id) > 10)
                     $this->utils->delete_single_link($link_id);
 
-                // delete if reported more than 5 times
+                // delete if reported more than 10 times
                 if ($this->utils->get_report_count($link_id) > 10)
                     $this->utils->delete_single_link($link_id);
             }

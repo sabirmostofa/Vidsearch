@@ -125,9 +125,9 @@ class Utils extends CI_Model {
         $s = mysql_real_escape_string($s);
         $low = $start;
         $amount = 10;
-        return $this->db->query("select vs_movies.movie_name, vs_links.link_url,vs_links.link_id 
-                from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
-                where vs_movies.movie_name='$s' limit $low, $amount");
+        return $this->db->query("select vs_movies.movie_name, vs_links.link_url,vs_links.link_id, vs_links.like_count,
+                vs_links.report_count from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
+                where vs_movies.movie_name='$s' order by like_count desc limit $low, $amount ");
     }
 
     function get_total_num($s) {
@@ -152,26 +152,31 @@ class Utils extends CI_Model {
     }
     
     //
-    function delete_single_link($link_id){        
-        return $this->db->simple_query("delete from vs_links where link_id= $link_id ");
+    function delete_single_link($link_id){ 
+        $data = mysql_fetch_assoc( $this->db->simple_query("select link_url from vs_links where link_id = $link_id "));
+        $link_url = $data['link_url'];
+        $this->insert_invalid_link($link_url);
+         $this->db->simple_query("delete from vs_links where link_id= $link_id ");
     }
     
     
     //insert into invalid link
     function insert_invalid_link($link_url){
         $this->db->save_queries = false;
-        if(mysql_fetch_assoc ($this->db->simple_query("select * from vs_invalid_links where link_url= $link_url") === FALSE))
-         $this->db->insert('vs_invalid_links', array( 'link_url' => $link));
+        $link_url = mysql_escape_string($link_url);
+         if(!$this->in_invalid_links($link_url))
+         $this->db->insert('vs_invalid_links', array( 'link_url' => $link_url));
         
     }
     
     //check if the link is invalid
-    function is_invalid_link($link_url){
-       if(mysql_fetch_assoc ($this->db->simple_query("select * from vs_invalid_links where link_url= $link_url")))
-               return 0;
+    function in_invalid_links($link_url){
+        $this->db->reconnect();
+        $link_url = mysql_escape_string($link_url);
+       if(mysql_num_rows ($this->db->simple_query("select * from vs_invalid_links where link_url= '$link_url'")) !=0 )
+               return 1;
        
-       return 1;
-        
+              
     }
     
     //function update a report count

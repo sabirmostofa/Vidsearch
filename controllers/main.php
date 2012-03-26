@@ -38,7 +38,7 @@ class Main extends CI_Controller {
             //echo $this->pagination->create_links();
         }
 
-
+$this->utils->delete_single_link(11);
         $this->load->view('home', $res);
     }
 

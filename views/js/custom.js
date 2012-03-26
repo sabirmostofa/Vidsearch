@@ -146,7 +146,10 @@ $(document).ready(function(){
         
       var action =  rew.exec(link_id_main);
        var link_id = red.exec(link_id_main);
-        
+       action = action[0];
+       link_id = link_id[0];
+       
+
         
        
         if(docCookies.hasItem('vs_data'))
@@ -194,12 +197,19 @@ $(document).ready(function(){
               
             },
             success :  function(data){
+               
                 if( prev_data == '' )
                     docCookies.setItem( 'vs_data', link_id, null, '/');
                 else                   
                     docCookies.setItem( 'vs_data', prev_data+'-'+link_id, null, '/');
                 
-                this_link.text('Reported');               
+                var vote_count =  this_link.next().text();
+                
+               var vc =Number (red.exec(vote_count));
+                
+                 this_link.next().text('('+ Number(vc+1)+')');
+                
+                
                
                
             }

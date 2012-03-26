@@ -41,9 +41,9 @@
                           <b><?php echo $start++ ?>.</b>  <a class="single_link" href="<?php echo $single->link_url ?>"><b><?php echo $single->movie_name ?></b></a>
                           <div class="report">
                                 <a class="upvote"  url="#" id="up<?php echo $single->link_id ?>"></a>
-                               <span class="votecount"> (<?php echo $upvote ?>)</span>
+                               <span class="votecount"> (<?php echo $single->like_count ?>)</span>
                                 <a  class="downvote" url="#"  id="down<?php echo $single->link_id ?>"></a>
-                                <span class="votecount"> (<?php echo $downvote ?>)</span>
+                                <span class="votecount"> (<?php echo $single->report_count ?>)</span>
                                 </div>
                             <br/>
                             

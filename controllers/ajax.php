@@ -32,6 +32,8 @@ class Ajax extends CI_Controller {
         //var_dump($_GET['link_id']);
         $link_id = $this->input->get('link_id');
         $todo = $this->input->get('todo');
+        
+       
         if($todo == 'down')
          $this->utils->add_report($link_id);
         else

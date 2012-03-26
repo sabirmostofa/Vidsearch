@@ -109,6 +109,9 @@ class Cron extends CI_Controller {
 
                     foreach ($m_links as $single) {
                         $single = trim($single);
+                        
+                        if($this->utils->in_invalid_links($single))
+                            continue;
 
                         if (!$this->utils->movie_link_exists($movie_id, $single)) {
 
@@ -153,11 +156,11 @@ class Cron extends CI_Controller {
 
 
                 //delete if not founded more than consecutive 5 times
-                if ($this->utils->get_not_found($link_id) > 5)
+                if ($this->utils->get_not_found($link_id) > 10)
                     $this->utils->delete_single_link($link_id);
 
                 // delete if reported more than 5 times
-                if ($this->utils->get_report_count($link_id) > 5)
+                if ($this->utils->get_report_count($link_id) > 10)
                     $this->utils->delete_single_link($link_id);
             }
 

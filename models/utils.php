@@ -221,6 +221,41 @@ class Utils extends CI_Model {
                 }
         return $data;
     }
+    
+    function api_get_movies($start, $limit){
+                $res =  $this->db->simple_query("select vs_movies.movie_id, vs_movies.movie_name  from vs_movies 
+                 limit $start, $limit");
+                
+                while($d=mysql_fetch_assoc($res)){
+                    $data[]=$d;
+                }
+        return $data;
+    }
+    
+    function api_single_movie_links($movie_id){
+               $res =  $this->db->simple_query("select vs_links.link_url from vs_links where movie_id=$movie_id");
+                
+                while($d=mysql_fetch_assoc($res)){
+                    $data[]=$d;
+                }
+        return $data;
+        
+        
+    }
+    
+    function api_most_liked($start, $limit){
+                $res =  $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
+                        from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id order by like_count desc
+                 limit $start, $limit");
+                
+                while($d=mysql_fetch_assoc($res)){
+                    $data[]=$d;
+                }
+        return $data;
+        
+    }
+
+
 
 }
 

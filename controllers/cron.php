@@ -124,7 +124,7 @@ class Cron extends CI_Controller {
                 }
             }
 
-            exit;
+            //exit;
         endfor;
     }// endof cron parser
 

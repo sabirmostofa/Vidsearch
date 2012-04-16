@@ -3,14 +3,17 @@
 class Cron extends CI_Controller {
 
     public function index() {
-        set_time_limit(4*3600);
+		error_reporting(E_ALL);
+		ignore_user_abort(true);
+        //set_time_limit(4*3600);
+	set_time_limit(0);
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
         $base_url = 'http://www.1channel.ch';
         //$url = 'main.html';
 
         $dom = new DOMDocument();
-        $content = file_get_contents($base_url);
+        $content = decode_characters( file_get_contents($base_url));
         @$dom->loadHTML($content);
 
 
@@ -31,8 +34,9 @@ class Cron extends CI_Controller {
 
             if ($i != 0) {
                 $base = 'http://www.1channel.ch/index.php?page=';
+                //$base = 'http://www.1channel.ch/index.php?sort=featured&page=';
                 $page = $base . $i;
-                $content = file_get_contents($page);
+                $content = decode_characters( file_get_contents($page));
                 @$dom->loadHTML($content);
             }
 
@@ -43,14 +47,15 @@ class Cron extends CI_Controller {
                     $mov_url = $base_url . $div->getElementsByTagName('a')->item(0)->getAttribute('href');
                     $mov_dom = new DOMDocument();
 
-                    @$mov_dom->loadHTML(file_get_contents($mov_url));
+                    @$mov_dom->loadHTML(decode_characters( file_get_contents($mov_url)));
 
                     //getting title
                     foreach ($mov_dom->getElementsByTagName('meta') as $meta)
                         if ($meta->getAttribute('property') == 'og:title')
                             $m_title = $meta->getAttribute('content');
 
-                    //echo $m_title, '<br/>';
+                    echo $m_title, '<br/>';
+                    if ($m_title == 'The Cay')continue;
 
                     $m_genres = array();
                     $m_actors = array();
@@ -109,15 +114,22 @@ class Cron extends CI_Controller {
 
                     $link_inserted=0;
                     foreach ($m_links as $single) {
-                        $single = trim($single);
+                      $single = trim($single);
+                       //echo '<br/>';
                         
-                        if($this->utils->in_invalid_links($single))
+                        if($this->utils->in_invalid_links($single)){
+							//echo $single;
+							//exit('invalid');
                             continue;
+						}
 
                         if (!$this->utils->movie_link_exists($movie_id, $single)) {
 
-                            if (!valid_single_link($single))
+                            if (!valid_single_link($single)){
+								//echo $single;
+							//exit('link not valid');
                                 continue;
+							}
 
                             $this->utils->insert_link($movie_id, $single);
                             $link_inserted++;

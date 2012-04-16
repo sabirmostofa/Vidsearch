@@ -144,6 +144,15 @@ class Utils extends CI_Model {
                 from  vs_links");
         
     }
+    //get total movies for api
+    
+    function get_total_movies(){
+        $res= $this->db->simple_query("select count(*) 
+                from  vs_movies");
+        $tot = mysql_fetch_array($res);
+        return $tot[0];
+        
+    }
     
     //return  100 links for db clean
     
@@ -253,6 +262,17 @@ class Utils extends CI_Model {
                 }
         return $data;
         
+    }
+    
+    
+    //api search get links
+    
+    
+    function api_get_search($s) {
+        $s = mysql_real_escape_string($s);
+     
+        return $this->db->query("select vs_movies.movie_id, vs_movies.movie_name from vs_movies               
+                where vs_movies.movie_name like '%$s%'  ");
     }
 
 

@@ -135,4 +135,77 @@ function valid_single_link($link) {
     return true;
 }
 
+function decode_characters($info) 
+{ 
+   // $info = mb_convert_encoding($info, "HTML-ENTITIES", "UTF-8"); 
+    $info = preg_replace('~^(&([a-zA-Z0-9]);)~',htmlentities('${1}'),$info); 
+    return($info); 
+}
+
+
+
+function regex_get_all_movs($main='main.html') {
+    
+       $ctx = stream_context_create(array( 
+    'http' => array( 
+        'timeout' => 5 
+        ) 
+    ) 
+);
+
+    $st = file_get_contents($link, 0, $ctx);
+
+
+    $regex = '~<div class="index_item index_item_ie">.*?</div>~s';
+
+    preg_match_all($regex, $st, $matches);
+
+    $title_regex = '~title="(.*?)"~';
+    $link_regex = '~href="(.*?)"~';
+
+
+
+    $all_movs = array();
+
+    foreach ($matches[0] as $match) {
+        preg_match($title_regex, $match, $title);
+        //var_dump($title);
+
+        $title = substr(trim(preg_replace('~\(\d+\)~', '', $title[1])), 6);
+
+        preg_match($link_regex, $match, $href);
+
+        $all_movs[$title] = trim($href[1]);
+    }
+
+    return $all_movs;
+}
+
+function regex_get_all_links($link='movie.html') {
+    $ctx = stream_context_create(array( 
+    'http' => array( 
+        'timeout' => 5 
+        ) 
+    ) 
+);
+    $all_links = array();
+    $st = file_get_contents($link, 0, $ctx);
+
+
+    $regex = '~<span class="movie_version_link">.*?</span>~s';
+
+    preg_match_all($regex, $st, $matches);
+    foreach ($matches[0] as $match) {
+
+        if (preg_match('/(?<=&url).*?(?=&domain)/', $match, $link)) {
+            $link_a = ltrim($link[0], '=');
+            $all_links[] = base64_decode($link_a);
+        }
+    }
+
+
+
+    return $all_links;
+}
+
 ?>

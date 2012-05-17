@@ -1,62 +1,105 @@
 <?php
 
-class Cron_Regex extends CI_Controller {
+class Cron_Letter extends CI_Controller {
 
     public function index() {
-        
 		error_reporting(E_ALL);
 		ignore_user_abort(true);
         //set_time_limit(4*3600);
 	set_time_limit(0);
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
-        $base_url = 'http://www.1channel.ch';
+        
+        $base_site = 'http://www.1channel.ch';
+        $base_url = 'http://www.1channel.ch/?letter=';
         //$url = 'main.html';
+//
+      $dom = new DOMDocument();
 
-        $dom = new DOMDocument();
-        $content = decode_characters( file_get_contents($base_url));
-        @$dom->loadHTML($content);
-
-
-
-        foreach ($dom->getElementsByTagName('div') as $div) {
-            if ($div->getAttribute('class') == 'pagination') {
-                $pag = array();
-                foreach ($div->getElementsByTagName('a') as $a) {
-                    preg_match('/\d+/', $a->getAttribute('href'), $val);
-                    $pag[] = $val[0];
-                }
-
-                $max_page = array_pop($pag);
-            }
-        }// endforeach
-        //Getting all pages
+        $letter_array =  range('a', 'z');
+       array_push($letter_array , '123' );
+        
+        shuffle($letter_array);
+        
+        //$letter_array = array('c');
+        
+        foreach( $letter_array as $let):
+        
+         $base_page = $base_url . $let;
+        
+            
+       $max_page = get_max_page($base_page);
+       
         for ($i = 0; $i <= $max_page; $i++):
 
-            
-                $base = 'http://www.1channel.ch/index.php?page=';
-                //$base = 'http://www.1channel.ch/index.php?sort=featured&page=';
-                if($i!=0)
-                $page = $base . $i;
-                else
-                $page= $base;
-               $all_movs = regex_get_all_movs($page);
+            if ($i != 0) 
+                $page= $base_page . "&page=$i";
+             else 
+               $page = $base_page;
+             
+         
+                
+                @$dom->loadHTML(get_tidy_html($page));
                 
            
-
-            foreach ($all_movs as $m_title => $m_link ) {
-
             
 
+            foreach ($dom->getElementsByTagName('div') as $div) {
+               
+
+                if ($div->getAttribute('class') == 'index_item index_item_ie') {
+
+                    $mov_url = $base_site . $div->getElementsByTagName('a')->item(0)->getAttribute('href');
+                    $mov_dom = new DOMDocument();
+
+                    @$mov_dom->loadHTML(get_tidy_html($mov_url));
+
+                    //getting title
+                    foreach ($mov_dom->getElementsByTagName('meta') as $meta)
+                        if ($meta->getAttribute('property') == 'og:title')
+                            $m_title = $meta->getAttribute('content');
+                        
+                        if(strlen($m_title) < 2 )
+                            continue;
+
+                    echo $m_title, '<br/>';
+                    
 
                     $m_genres = array();
                     $m_actors = array();
                     $m_links = array();
-                    $m_links= regex_get_all_links($base_url . $m_link);
 
                     //$info_needed= array('movie_info_genres', 'movie_info_actors', );
                     //getting other info
-     
+                    foreach ($mov_dom->getElementsByTagName('span') as $span):
+
+                        switch ($span->getAttribute('class')):
+                            case 'movie_info_genres':
+                                foreach ($span->getElementsByTagName('a') as $a)
+                                    $m_genres[] = $a->textContent;
+                                break;
+
+                            case 'movie_info_actors':
+                                foreach ($span->getElementsByTagName('a') as $a)
+                                    $m_actors[] = $a->textContent;
+                                break;
+
+                            case 'movie_version_link':
+                                foreach ($span->getElementsByTagName('a') as $a) {
+                                    if (preg_match('/(?<=&url).*?(?=&domain)/', $a->getAttribute('href'), $link)) {
+                                        $link_a = ltrim($link[0], '=');
+                                        $m_links[] = base64_decode($link_a);
+                                    } else {
+
+                                        $m_links[] = $a->getAttribute('href');
+                                    }
+                                }
+                                break;
+
+                        endswitch;
+
+
+                    endforeach;
 
                     // var_dump($m_genres);
                     // var_dump($m_actors);
@@ -79,8 +122,8 @@ class Cron_Regex extends CI_Controller {
 
                     $link_inserted=0;
                     foreach ($m_links as $single) {
-                      echo $single = trim($single);
-                       echo '<br/>';
+                      $single = trim($single);
+                       //echo '<br/>';
                         
                         if($this->utils->in_invalid_links($single)){
 							//echo $single;
@@ -100,15 +143,17 @@ class Cron_Regex extends CI_Controller {
                             $link_inserted++;
                         }
                     }
-                
+                }
             }
 
             //exit;
         endfor;
         
+        endforeach;
+        
         echo "New Links: $link_inserted";
         
-    }// endof cron parser
+    }// endof cron parser index function
 
     // function to remove the  obsolete urls as cron 
     public function cleanup() {

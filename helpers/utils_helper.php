@@ -145,16 +145,7 @@ function decode_characters($info)
 
 
 function regex_get_all_movs($main='main.html') {
-    
-       $ctx = stream_context_create(array( 
-    'http' => array( 
-        'timeout' => 5 
-        ) 
-    ) 
-);
-
-    $st = file_get_contents($link, 0, $ctx);
-
+    $st = url_get_contents($main);
 
     $regex = '~<div class="index_item index_item_ie">.*?</div>~s';
 
@@ -171,7 +162,7 @@ function regex_get_all_movs($main='main.html') {
         preg_match($title_regex, $match, $title);
         //var_dump($title);
 
-        $title = substr(trim(preg_replace('~\(\d+\)~', '', $title[1])), 6);
+        $title = reform_title( substr(trim(preg_replace('~\(\d+\)~', '', $title[1])), 6));
 
         preg_match($link_regex, $match, $href);
 
@@ -182,14 +173,8 @@ function regex_get_all_movs($main='main.html') {
 }
 
 function regex_get_all_links($link='movie.html') {
-    $ctx = stream_context_create(array( 
-    'http' => array( 
-        'timeout' => 5 
-        ) 
-    ) 
-);
     $all_links = array();
-    $st = file_get_contents($link, 0, $ctx);
+    $st = url_get_contents($link);
 
 
     $regex = '~<span class="movie_version_link">.*?</span>~s';
@@ -206,6 +191,87 @@ function regex_get_all_links($link='movie.html') {
 
 
     return $all_links;
+}
+
+
+function get_max_page($base_url) {
+
+    $dom = new DOMDocument();
+    
+    @$dom->loadHTML(get_tidy_html($base_url));
+
+
+
+    foreach ($dom->getElementsByTagName('div') as $div) {
+        if ($div->getAttribute('class') == 'pagination') {
+            $pag = array();
+            foreach ($div->getElementsByTagName('a') as $a) {
+                preg_match('/\d+/', $a->getAttribute('href'), $val);
+                $pag[] = $val[0];
+            }
+
+            $max_page = array_pop($pag);
+        }
+    }// endforeach
+
+if(!isset($max_page)) $max_page=150;
+    return $max_page;
+}
+
+
+
+
+
+function get_max_page_regex($url) {
+
+    $content = url_get_contents($url);
+    
+   preg_match('~<div class="pagination".*?</div>~', $content, $matches);
+   
+  preg_match_all('~page=(\d+)~', $content, $matches1);
+  
+  return max($matches1[1]);
+  
+
+
+
+}
+
+
+
+//request 3 times max if the web request fails
+function url_get_contents($url){
+    
+   $content = file_get_contents($url);
+   
+   if($content === false)
+       $content = file_get_contents($url);
+   if($content === false)
+       $content = file_get_contents($url);
+   if($content === false)
+       $content = file_get_contents($url);
+   
+   return $content;
+   
+
+   
+   
+   
+}
+
+function get_tidy_html($page) {
+    $content = tidy_parse_file($page, array('anchor-as-name'=> 0));
+    if(!$content){
+		$content = tidy_parse_file($page, array('anchor-as-name'=> 0));
+		}
+    if(!$content){
+		$content = tidy_parse_file($page,array('anchor-as-name'=> 0) );
+		}
+    if(!$content){
+		$content = tidy_parse_file($page, array('anchor-as-name'=> 0));
+		}
+    
+    return tidy_get_output($content);
 }
 
 ?>

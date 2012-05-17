@@ -43,7 +43,7 @@ class Cron_Regex_Letter extends CI_Controller {
              
                 $all_movs = regex_get_all_movs($page);
                 
-                var_dump($all_movs);
+               // var_dump($all_movs);
 
 
 
@@ -57,7 +57,7 @@ class Cron_Regex_Letter extends CI_Controller {
                     $m_links = array();
                     $m_links = regex_get_all_links($base_site . $m_link);
                     
-                    var_dump($m_links);
+                    //var_dump($m_links);
 
                     //$info_needed= array('movie_info_genres', 'movie_info_actors', );
                     //getting other info
@@ -105,7 +105,7 @@ class Cron_Regex_Letter extends CI_Controller {
                     }
                 }
 
-                exit;
+                //exit;
             endfor;
         endforeach;
 

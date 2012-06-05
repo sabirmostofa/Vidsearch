@@ -12,6 +12,13 @@ class Bug_Checker extends CI_Controller {
         $this->load->model('utils', '', true);
         $base_url = 'http://www.1channel.ch';
         //$url = 'main.html';
+        
+        echo get_content_through_proxy('http://ravens4you.com/music_trp.php');
+        exit;
+        $prs = get_proxy_list();
+var_dump($prs);
+        exit;
+        
 
         $dom = new DOMDocument();
         $content = decode_characters(file_get_contents($base_url));

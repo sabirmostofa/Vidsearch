@@ -10,6 +10,7 @@ class Cron_Regex_Letter extends CI_Controller {
         set_time_limit(0);
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
+        include(APPPATH.'libraries/simple_html_dom.php');
 
 
         $base_site = 'http://www.1channel.ch';
@@ -36,29 +37,36 @@ class Cron_Regex_Letter extends CI_Controller {
             for ($i = 0; $i <= $max_page; $i++):
 
 
-               if ($i != 0) 
-                $page= $base_page . "&page=$i";
-             else 
-               $page = $base_page;
-             
+                if ($i != 0)
+                    $page = $base_page . "&page=$i";
+                else
+                    $page = $base_page;
+
                 $all_movs = regex_get_all_movs($page);
-                
-               // var_dump($all_movs);
+
+                if (empty($all_movs))
+                    continue;
+
+
+                // var_dump($all_movs);
 
 
 
                 foreach ($all_movs as $m_title => $m_link) {
 
 
-
+                    if (strlen($m_title) == 0)
+                        continue;
 
                     $m_genres = array();
                     $m_actors = array();
                     $m_links = array();
                     $m_links = regex_get_all_links($base_site . $m_link);
-                    
-                    //var_dump($m_links);
 
+                    if (empty($m_links))
+                        continue;
+
+                    //var_dump($m_links);
                     //$info_needed= array('movie_info_genres', 'movie_info_actors', );
                     //getting other info
                     // var_dump($m_genres);
@@ -105,7 +113,7 @@ class Cron_Regex_Letter extends CI_Controller {
                     }
                 }
 
-                //exit;
+            //exit;
             endfor;
         endforeach;
 

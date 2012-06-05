@@ -95,16 +95,16 @@ function video_still_exists($link) {
         //echo 'http code prob';
         return;
     }
-    
+
     //if the video has been removed
-    
+
     $messages = array(
-       'This file doesn\'t exist, or has been removed.'        
+        'This file doesn\'t exist, or has been removed.'
     );
-    
-    foreach($messages as $single)
-        if(stripos($response, $single) !== false)
-                return;
+
+    foreach ($messages as $single)
+        if (stripos($response, $single) !== false)
+            return;
 
     return true;
 }
@@ -112,8 +112,8 @@ function video_still_exists($link) {
 function valid_single_link($link) {
     if (stripos($link, 'http://') === false) {
         //echo 'http not foound';
-        if( stripos($link, 'https://') === false )
-        return;
+        if (stripos($link, 'https://') === false)
+            return;
     }
 
     // all domains to avoid
@@ -135,14 +135,11 @@ function valid_single_link($link) {
     return true;
 }
 
-function decode_characters($info) 
-{ 
-   // $info = mb_convert_encoding($info, "HTML-ENTITIES", "UTF-8"); 
-    $info = preg_replace('~^(&([a-zA-Z0-9]);)~',htmlentities('${1}'),$info); 
-    return($info); 
+function decode_characters($info) {
+    // $info = mb_convert_encoding($info, "HTML-ENTITIES", "UTF-8"); 
+    $info = preg_replace('~^(&([a-zA-Z0-9]);)~', htmlentities('${1}'), $info);
+    return($info);
 }
-
-
 
 function regex_get_all_movs($main='main.html') {
     $st = url_get_contents($main);
@@ -162,7 +159,7 @@ function regex_get_all_movs($main='main.html') {
         preg_match($title_regex, $match, $title);
         //var_dump($title);
 
-        $title = reform_title( substr(trim(preg_replace('~\(\d+\)~', '', $title[1])), 6));
+        $title = reform_title(substr(trim(preg_replace('~\(\d+\)~', '', $title[1])), 6));
 
         preg_match($link_regex, $match, $href);
 
@@ -193,11 +190,10 @@ function regex_get_all_links($link='movie.html') {
     return $all_links;
 }
 
-
 function get_max_page($base_url) {
 
     $dom = new DOMDocument();
-    
+
     @$dom->loadHTML(get_tidy_html($base_url));
 
 
@@ -214,64 +210,203 @@ function get_max_page($base_url) {
         }
     }// endforeach
 
-if(!isset($max_page)) $max_page=150;
+    if (!isset($max_page))
+        $max_page = 150;
     return $max_page;
 }
-
-
-
-
 
 function get_max_page_regex($url) {
 
     $content = url_get_contents($url);
+
+    preg_match('~<div class="pagination".*?</div>~', $content, $matches);
+
+    preg_match_all('~page=(\d+)~', $content, $matches1);
     
-   preg_match('~<div class="pagination".*?</div>~', $content, $matches);
-   
-  preg_match_all('~page=(\d+)~', $content, $matches1);
-  
-  return max($matches1[1]);
-  
+    /*
+    if( !is_array($matches1[1]) || empty($matches1[1]) ){
+		var_dump($content);
+		mail('sabirmostofa@gmail.com', 'Failing returns', $content);
+		$fp = fopen('./bug_check_406.txt','w');
+		fwrite($fp,$content);
+		fclose($fp);
+		exit;
+	}
+	* */
 
-
-
+    return max($matches1[1]);
 }
 
+// Sleep while checking robot 
 
+function is_robot_check($content){
+	if(stripos( $content, 'robot_check_container') !== false  )
+	return true;
+	
+	
+	}
 
 //request 3 times max if the web request fails
-function url_get_contents($url){
-    
-   $content = file_get_contents($url);
-   
-   if($content === false)
-       $content = file_get_contents($url);
-   if($content === false)
-       $content = file_get_contents($url);
-   if($content === false)
-       $content = file_get_contents($url);
-   
-   return $content;
-   
 
-   
-   
-   
+$counter_proxy = 0;
+function url_get_contents($url) {
+global $counter_proxy;
+
+    $content = file_get_contents($url);
+    if(++$counter_proxy%1000 == 0 || is_robot_check( $content)){
+		$content = get_content_through_proxy($url);
+		
+		if($content === false || is_robot_check($content))
+           $content = get_content_through_proxy($url);
+           
+           return $content;
+		}
+	
+
+    if ($content === false)
+        $content = file_get_contents($url);
+    if ($content === false)
+        $content = file_get_contents($url);
+    if ($content === false) {
+
+        $content = get_content_through_proxy($url);
+        if ($content === false)
+            $content = get_content_through_proxy($url);
+        if ($content === false)
+            $content = get_content_through_proxy($url);
+        if ($content === false) {
+            $message = <<<EOT
+   ******************************************
+    <br/>
+    ********************************************
+       
+<h1>Proxy Failed</h1>
+********************************************
+       
+
+            
+EOT;
+            echo $message;
+
+            $content = file_get_contents($url);
+        }
+    }
+
+    return $content;
 }
 
 function get_tidy_html($page) {
-    $content = tidy_parse_file($page, array('anchor-as-name'=> 0));
-    if(!$content){
-		$content = tidy_parse_file($page, array('anchor-as-name'=> 0));
-		}
-    if(!$content){
-		$content = tidy_parse_file($page,array('anchor-as-name'=> 0) );
-		}
-    if(!$content){
-		$content = tidy_parse_file($page, array('anchor-as-name'=> 0));
-		}
-    
+    $content = tidy_parse_file($page, array('anchor-as-name' => 0));
+    if (!$content) {
+        $content = tidy_parse_file($page, array('anchor-as-name' => 0));
+    }
+    if (!$content) {
+        $content = tidy_parse_file($page, array('anchor-as-name' => 0));
+    }
+    if (!$content) {
+        $content = tidy_parse_file($page, array('anchor-as-name' => 0));
+    }
+
     return tidy_get_output($content);
+}
+
+//Getting Proxy List
+
+function getIP($obj, $html) {
+
+
+    $text = str_replace("div", "span", $obj->xmltext);
+    $text = explode("span", $text);
+
+    $ip = array();
+
+    foreach ($text as $value) {
+        $value = trim($value);
+        $value = trim($value, "<");
+        $value = trim($value, ">");
+        $value = trim($value, ".");
+
+        if (empty($value))
+            continue;
+
+        if (strpos($value, "display:none")) {
+            continue;
+        }
+
+        if (strpos($value, ">")) {
+            $value = "<" . $value . ">";
+        }
+
+        $value = strip_tags($value);
+
+        $value = trim($value, ".");
+
+        if (empty($value))
+            continue;
+
+        $ip [] = $value;
+    }
+
+    if (is_array($ip)) {
+        return implode(".", $ip);
+    }
+}
+
+function get_proxy_list() {
+
+    //include 'simple_html_dom.php';
+    $html = file_get_html('http://www.hidemyass.com/proxy-list/');
+
+    $proxy_array = array();
+    $counter = 0;
+    foreach ($html->find('tr') as $element) {
+        if (++$counter == 1)
+            continue;
+        $ip = $element->find('td', 1);
+        $port = trim($element->find('td', 2)->xmltext);
+        $ip = getIP($ip, $html);
+        // var_dump($element->xmltext);
+
+        $proxy_array[$ip] = $port;
+    }
+
+    return $proxy_array;
+}
+
+// get content through proxy
+
+
+function get_content_through_proxy($url) {
+
+    $pr = get_proxy_list();
+
+
+    $keys = array_keys($pr);
+    shuffle($keys);
+    $pr = array_merge(array_flip($keys), $pr);
+
+
+
+    foreach ($pr as $key => $value):
+        $ip = $key;
+        $port = $value;
+        break;
+    endforeach;
+
+
+
+
+
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0');
+    curl_setopt($ch, CURLOPT_PROXY, $ip);
+    curl_setopt($ch, CURLOPT_PROXYPORT, $port);
+//curl_setopt($ch, CURLOPT_HEADER, 1);
+
+    return curl_exec($ch);
 }
 
 ?>

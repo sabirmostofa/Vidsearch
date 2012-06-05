@@ -74,6 +74,7 @@ function video_still_exists($link) {
     curl_setopt($ch, CURLOPT_HEADER, 1);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 4);
 
 // grab URL and pass it to the browser
     $response = curl_exec($ch);
@@ -219,52 +220,71 @@ function get_max_page_regex($url) {
 
     $content = url_get_contents($url);
 
-    preg_match('~<div class="pagination".*?</div>~', $content, $matches);
+    if (preg_match('~pagination".*?</div>~s', $content, $matches))
+        preg_match_all('~page=(\d+)~s', $content, $matches);
 
-    preg_match_all('~page=(\d+)~', $content, $matches1);
-    
+
+
     /*
-    if( !is_array($matches1[1]) || empty($matches1[1]) ){
-		var_dump($content);
-		mail('sabirmostofa@gmail.com', 'Failing returns', $content);
-		$fp = fopen('./bug_check_406.txt','w');
-		fwrite($fp,$content);
-		fclose($fp);
-		exit;
-	}
-	* */
+      if( !is_array($matches1[1]) || empty($matches1[1]) ){
+      var_dump($content);
+      mail('sabirmostofa@gmail.com', 'Failing returns', $content);
+      $fp = fopen('./bug_check_406.txt','w');
+      fwrite($fp,$content);
+      fclose($fp);
+      exit;
+      }
+     * */
 
-    return max($matches1[1]);
+// alternative approach to get the max pages
+
+    if (!is_array($matches)) {
+        echo '<br/>**********', 'No max page found', '*********<br/>';
+        if (preg_match('~(\d+) items found~s', $content, $matches))
+            return ceil($matches[1] / 24);
+    }
+    echo '<br/>**********', 'Max page= ', max($matches[1]), '*********<br/>';
+
+    return max($matches[1]);
 }
 
 // Sleep while checking robot 
 
-function is_robot_check($content){
-	if(stripos( $content, 'robot_check_container') !== false  )
-	return true;
-	
-	
-	}
+function is_robot_check($content) {
+    if (stripos($content, 'robot_check_container') !== false)
+        return true;
+}
 
 //request 3 times max if the web request fails
 
 $counter_proxy = 0;
+
 function url_get_contents($url) {
-global $counter_proxy;
+    global $counter_proxy;
+
+    /*
+      if(++$counter_proxy%5000 < 200){
+      $content = get_content_through_proxy($url);
+      if($content === false)
+      $content = get_content_through_proxy($url);
+      return $content;
+      }
+     * */
 
     $content = file_get_contents($url);
-    if(++$counter_proxy%1000 == 0 || is_robot_check( $content)){
-		$content = get_content_through_proxy($url);
-		
-		if($content === false || is_robot_check($content))
-           $content = get_content_through_proxy($url);
-           
-           return $content;
-		}
-	
+    if (is_robot_check($content)) {
 
-    if ($content === false)
-        $content = file_get_contents($url);
+        echo '<br/>**********', 'switching to robot check', '*********<br/>';
+        $content = get_content_through_proxy($url);
+
+        if ($content === false || is_robot_check($content))
+            $content = get_content_through_proxy($url);
+
+        return $content;
+    }
+
+
+
     if ($content === false)
         $content = file_get_contents($url);
     if ($content === false) {
@@ -354,7 +374,7 @@ function getIP($obj, $html) {
 
 function get_proxy_list() {
 
-    //include 'simple_html_dom.php';
+
     $html = file_get_html('http://www.hidemyass.com/proxy-list/');
 
     $proxy_array = array();
@@ -366,8 +386,8 @@ function get_proxy_list() {
         $port = trim($element->find('td', 2)->xmltext);
         $ip = getIP($ip, $html);
         // var_dump($element->xmltext);
-
-        $proxy_array[$ip] = $port;
+        if (preg_match('~\d~', $ip) && preg_match('~\d~', $port))
+            $proxy_array[$ip] = $port;
     }
 
     return $proxy_array;
@@ -378,22 +398,29 @@ function get_proxy_list() {
 
 function get_content_through_proxy($url) {
 
-    $pr = get_proxy_list();
+    /*
+      $pr = get_proxy_list();
 
 
-    $keys = array_keys($pr);
-    shuffle($keys);
-    $pr = array_merge(array_flip($keys), $pr);
+      $keys = array_keys($pr);
+      shuffle($keys);
+      $pr = array_merge(array_flip($keys), $pr);
 
 
 
-    foreach ($pr as $key => $value):
-        $ip = $key;
-        $port = $value;
-        break;
-    endforeach;
+      foreach ($pr as $key => $value):
+      $ip = $key;
+      $port = $value;
+      break;
+      endforeach;
+     */
+
+    global $proxy_array;
+
+    $ip = array_rand($proxy_array);
 
 
+    $port = $proxy_array[$ip];
 
 
 
@@ -404,6 +431,8 @@ function get_content_through_proxy($url) {
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0');
     curl_setopt($ch, CURLOPT_PROXY, $ip);
     curl_setopt($ch, CURLOPT_PROXYPORT, $port);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 //curl_setopt($ch, CURLOPT_HEADER, 1);
 
     return curl_exec($ch);

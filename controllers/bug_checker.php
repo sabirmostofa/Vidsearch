@@ -10,7 +10,11 @@ class Bug_Checker extends CI_Controller {
         //set_time_limit(20);
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
+        include(APPPATH.'libraries/simple_html_dom.php');
+        global $proxy_array;
+        $proxy_array= get_proxy_list();
         $base_url = 'http://www.1channel.ch';
+        
         //$url = 'main.html';
         
         echo get_content_through_proxy('http://ravens4you.com/music_trp.php');

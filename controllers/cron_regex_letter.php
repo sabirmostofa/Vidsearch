@@ -11,6 +11,8 @@ class Cron_Regex_Letter extends CI_Controller {
         $this->load->helper('utils');
         $this->load->model('utils', '', true);
         include(APPPATH.'libraries/simple_html_dom.php');
+         global $proxy_array;
+        $proxy_array= get_proxy_list();
 
 
         $base_site = 'http://www.1channel.ch';

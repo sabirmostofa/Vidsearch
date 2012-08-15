@@ -170,7 +170,7 @@ function regex_get_all_movs($main='main.html') {
     return $all_movs;
 }
 
-function regex_get_all_links($link='movie.html') {
+function regex_get_all_info($link='movie.html') {
     $all_links = array();
     $st = url_get_contents($link);
 
@@ -185,10 +185,44 @@ function regex_get_all_links($link='movie.html') {
             $all_links[] = base64_decode($link_a);
         }
     }
+    
+    //getting released date
+    $released_regex = '~Released.*?<td>(.*?)</td>~s';
+    preg_match($released_regex, $st, $matches1);
+    if ($matches1[1])
+        $release_date = strtotime($matches1[1]);
+    else
+        $release_date = time();
 
+    //getting imdb link
+    $imdb_regex = '~mlink_imdb.*?href="(.*?)"~s';
+    preg_match($imdb_regex, $st, $matches2); 
+    if (isset($matches2[1]))
+        $imdb = $matches2[1];
+    else
+        $imdb = '';
 
+    
+    
+    if(strlen($imdb)>0 )
+        preg_match('~\d+~', $imdb, $matches4);
 
-    return $all_links;
+    
+    if( isset($matches4[0]))
+        $imdb_id =$matches4[0];
+    else 
+        $imdb_id=-1;
+
+    $info = array(
+        'links' => $all_links,
+        'imdb_link' => $imdb_id,
+        'release_date' => $release_date
+    );
+
+    
+    
+
+    return $info;
 }
 
 function get_max_page($base_url) {
@@ -271,7 +305,7 @@ function url_get_contents($url) {
       }
      * */
 
-    $content = file_get_contents($url);
+    $content = get_content_curl($url);
     if (is_robot_check($content)) {
 
         echo '<br/>**********', 'switching to robot check', '*********<br/>';
@@ -286,7 +320,7 @@ function url_get_contents($url) {
 
 
     if ($content === false)
-        $content = file_get_contents($url);
+        $content = get_content_curl($url);
     if ($content === false) {
 
         $content = get_content_through_proxy($url);
@@ -308,7 +342,7 @@ function url_get_contents($url) {
 EOT;
             echo $message;
 
-            $content = file_get_contents($url);
+            $content = get_content_curl($url);
         }
     }
 
@@ -393,6 +427,18 @@ function get_proxy_list() {
     return $proxy_array;
 }
 
+function get_content_curl($url) {
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0');
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
+    return curl_exec($ch);
+}
+
 // get content through proxy
 
 
@@ -433,6 +479,7 @@ function get_content_through_proxy($url) {
     curl_setopt($ch, CURLOPT_PROXYPORT, $port);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
 //curl_setopt($ch, CURLOPT_HEADER, 1);
 
     return curl_exec($ch);

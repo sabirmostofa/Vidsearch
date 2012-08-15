@@ -18,6 +18,19 @@ class Utils extends CI_Model {
         return mysql_num_rows($this->db->simple_query("select movie_id from vs_movies where movie_name='$movie_name' "));
     }
 
+    function get_movie_release_date($id) {
+        $res = $this->db->simple_query("select movie_release_date from vs_movies where movie_id=$id");
+        return mysql_result($res, 0);
+    }
+
+    function insert_release_imdb_info($id, $imdb, $release_date) {
+        $this->db->save_queries = false;
+        $this->movie_channel_link=$imdb;
+        $this->movie_release_date=$release_date;
+        return $this->db->update('vs_movies', $this ,array('movie_id' => $id));
+        
+    }
+
     function get_movie_id($movie_name) {
         $movie_name = mysql_real_escape_string($movie_name);
         $res = $this->db->simple_query("select movie_id from vs_movies where movie_name='$movie_name' ");
@@ -85,7 +98,7 @@ class Utils extends CI_Model {
 
     //Actor Functions
 
-    function actor_exists($actor) {        
+    function actor_exists($actor) {
         $actor = mysql_real_escape_string($actor);
         return mysql_num_rows($this->db->simple_query("select id from vs_actors where actor_name='$actor' "));
     }
@@ -136,146 +149,143 @@ class Utils extends CI_Model {
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");
     }
-    
+
     //get total links for cron cleanup
-    
-    function get_total_links(){
+
+    function get_total_links() {
         return $this->db->simple_query("select count(*) 
                 from  vs_links");
-        
     }
+
     //get total movies for api
-    
-    function get_total_movies(){
-        $res= $this->db->simple_query("select count(*) 
+
+    function get_total_movies() {
+        $res = $this->db->simple_query("select count(*) 
                 from  vs_movies");
         $tot = mysql_fetch_array($res);
         return $tot[0];
-        
     }
-    
+
     //return  100 links for db clean
-    
-    function get_links_partial($start, $limit){
+
+    function get_links_partial($start, $limit) {
         return $this->db->simple_query(" select * from vs_links limit $start , $limit ");
     }
-    
+
     //
-    function delete_single_link($link_id){ 
-        $data = mysql_fetch_assoc( $this->db->simple_query("select link_url from vs_links where link_id = $link_id "));
+    function delete_single_link($link_id) {
+        $data = mysql_fetch_assoc($this->db->simple_query("select link_url from vs_links where link_id = $link_id "));
         $link_url = $data['link_url'];
         $this->insert_invalid_link($link_url);
-         $this->db->simple_query("delete from vs_links where link_id= $link_id ");
+        $this->db->simple_query("delete from vs_links where link_id= $link_id ");
     }
-    
-    
+
     //insert into invalid link
-    function insert_invalid_link($link_url){
+    function insert_invalid_link($link_url) {
         $this->db->save_queries = false;
         $link_url = mysql_escape_string($link_url);
-         if(!$this->in_invalid_links($link_url))
-         $this->db->insert('vs_invalid_links', array( 'link_url' => $link_url));
-        
+        if (!$this->in_invalid_links($link_url))
+            $this->db->insert('vs_invalid_links', array('link_url' => $link_url));
     }
-    
+
     //check if the link is invalid
-    function in_invalid_links($link_url){
+    function in_invalid_links($link_url) {
         $this->db->reconnect();
         $link_url = mysql_escape_string($link_url);
-       if(mysql_num_rows ($this->db->simple_query("select * from vs_invalid_links where link_url= '$link_url'")) !=0 )
-               return 1;
-       
-              
+        if (mysql_num_rows($this->db->simple_query("select * from vs_invalid_links where link_url= '$link_url'")) != 0)
+            return 1;
     }
-    
+
     //function update a report count
-    function add_report($link_id){        
-         return $this->db->simple_query("update vs_links set report_count=report_count+1 where link_id = $link_id ");
+    function add_report($link_id) {
+        return $this->db->simple_query("update vs_links set report_count=report_count+1 where link_id = $link_id ");
     }
-    
-     function add_up($link_id){        
-         return $this->db->simple_query("update vs_links set like_count=like_count+1 where link_id = $link_id ");
+
+    function add_up($link_id) {
+        return $this->db->simple_query("update vs_links set like_count=like_count+1 where link_id = $link_id ");
     }
-    
-        //function get report count
-    function get_report_count($link_id){        
-       $data = mysql_fetch_assoc( $this->db->simple_query("select report_count from vs_links where link_id = $link_id "));
-         return $data['report_count'];
+
+    //function get report count
+    function get_report_count($link_id) {
+        $data = mysql_fetch_assoc($this->db->simple_query("select report_count from vs_links where link_id = $link_id "));
+        return $data['report_count'];
     }
-    
+
     //function for adding to not_found column
-    function add_to_not_found($link_id){   
+    function add_to_not_found($link_id) {
         $this->db->reconnect();
-         return $this->db->simple_query("update vs_links set not_found=not_found+1 where link_id = $link_id ");
+        return $this->db->simple_query("update vs_links set not_found=not_found+1 where link_id = $link_id ");
     }
+
     //function for clearing the not found column
-    function clear_not_found($link_id){        
-         return $this->db->simple_query("update vs_links set not_found=0 where link_id = $link_id ");
+    function clear_not_found($link_id) {
+        return $this->db->simple_query("update vs_links set not_found=0 where link_id = $link_id ");
     }
+
     //function for getting the not_found column
-    function get_not_found($link_id){        
-       $data = mysql_fetch_assoc( $this->db->simple_query("select not_found from vs_links where link_id = $link_id "));
-         return $data['not_found'];
+    function get_not_found($link_id) {
+        $data = mysql_fetch_assoc($this->db->simple_query("select not_found from vs_links where link_id = $link_id "));
+        return $data['not_found'];
     }
-    
+
     // API functions
-    
-    function api_get_links($start, $limit){
-                $res =  $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
+
+    function api_get_links($start, $limit) {
+        $res = $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
                         from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                  limit $start, $limit");
-                
-                while($d=mysql_fetch_assoc($res)){
-                    $data[]=$d;
-                }
+
+        while ($d = mysql_fetch_assoc($res)) {
+            $data[] = $d;
+        }
         return $data;
     }
-    
-    function api_get_movies($start, $limit){
-                $res =  $this->db->simple_query("select vs_movies.movie_id, vs_movies.movie_name  from vs_movies 
+
+    function api_get_movies($start, $limit) {
+        $res = $this->db->simple_query("select vs_movies.movie_id, vs_movies.movie_name  from vs_movies 
                  limit $start, $limit");
-                
-                while($d=mysql_fetch_assoc($res)){
-                    $data[]=$d;
-                }
+
+        while ($d = mysql_fetch_assoc($res)) {
+            $data[] = $d;
+        }
         return $data;
     }
-    
-    function api_single_movie_links($movie_id){
-               $res =  $this->db->simple_query("select vs_links.link_url from vs_links where movie_id=$movie_id");
-                
-                while($d=mysql_fetch_assoc($res)){
-                    $data[]=$d;
-                }
+
+    function api_single_movie_links($movie_id) {
+        $res = $this->db->simple_query("select vs_links.link_url from vs_links where movie_id=$movie_id");
+
+        while ($d = mysql_fetch_assoc($res)) {
+            $data[] = $d;
+        }
         return $data;
-        
-        
     }
-    
-    function api_most_liked($start, $limit){
-                $res =  $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
+
+    function api_most_liked($start, $limit) {
+        $res = $this->db->simple_query("select vs_movies.movie_name, vs_links.link_url 
                         from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id order by like_count desc
                  limit $start, $limit");
-                
-                while($d=mysql_fetch_assoc($res)){
-                    $data[]=$d;
-                }
+
+        while ($d = mysql_fetch_assoc($res)) {
+            $data[] = $d;
+        }
         return $data;
-        
     }
-    
-    
+
     //api search get links
-    
-    
+
+
     function api_get_search($s) {
         $s = mysql_real_escape_string($s);
-     
-        return $this->db->query("select vs_movies.movie_id, vs_movies.movie_name from vs_movies               
-                where vs_movies.movie_name like '%$s%'  ");
+
+        return $this->db->query("
+                select movie_id, 
+                movie_name,
+                movie_channel_link imdb_id,
+                movie_release_date release_date 
+                from vs_movies               
+                where vs_movies.movie_name like '%$s%'  
+                ");
     }
-
-
 
 }
 

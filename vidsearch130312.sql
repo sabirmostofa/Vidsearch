@@ -72,6 +72,20 @@ CREATE TABLE IF NOT EXISTS `vs_links` (
   KEY `movie_id` (`movie_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
+
+CREATE TABLE IF NOT EXISTS `vs_series_links` (
+  `link_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `series_id` bigint(20) unsigned NOT NULL,
+  `season` int(3) unsigned NOT NULL,
+  `episode` int(3) unsigned NOT NULL,
+  `link_url` varchar(200) NOT NULL,
+  `report_count` int(10) unsigned DEFAULT '0',
+  `not_found` int(10) unsigned DEFAULT '0',
+  PRIMARY KEY (`link_id`),
+  KEY `link_url` (`link_url`),
+  KEY `series_id` (`series_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
 --
 -- Dumping data for table `vs_links`
 --
@@ -91,6 +105,15 @@ CREATE TABLE IF NOT EXISTS `vs_movies` (
   `movie_release_countries` text NOT NULL,
   PRIMARY KEY (`movie_id`),
   KEY `movie_name` (`movie_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `vs_series` (
+  `series_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `series_name` varchar(120) NOT NULL,
+  `imdb_link` text NOT NULL,
+  `movie_release_date` datetime NOT NULL,
+  PRIMARY KEY (`series_id`),
+  KEY `series_name` (`series_name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --

@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 26, 2012 at 02:13 PM
--- Server version: 5.1.54
--- PHP Version: 5.3.5-1ubuntu7.2
+-- Erstellungszeit: 10. August 2012 um 23:44
+-- Server Version: 5.1.54
+-- PHP-Version: 5.3.5-1ubuntu7.7
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -16,13 +16,13 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `vidsearch`
+-- Datenbank: `vidsearch`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_actors`
+-- Tabellenstruktur für Tabelle `vs_actors`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_actors` (
@@ -33,14 +33,14 @@ CREATE TABLE IF NOT EXISTS `vs_actors` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
--- Dumping data for table `vs_actors`
+-- Daten für Tabelle `vs_actors`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_genre`
+-- Tabellenstruktur für Tabelle `vs_genre`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_genre` (
@@ -51,14 +51,14 @@ CREATE TABLE IF NOT EXISTS `vs_genre` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
--- Dumping data for table `vs_genre`
+-- Daten für Tabelle `vs_genre`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_invalid_links`
+-- Tabellenstruktur für Tabelle `vs_invalid_links`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_invalid_links` (
@@ -67,14 +67,14 @@ CREATE TABLE IF NOT EXISTS `vs_invalid_links` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `vs_invalid_links`
+-- Daten für Tabelle `vs_invalid_links`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_links`
+-- Tabellenstruktur für Tabelle `vs_links`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_links` (
@@ -90,14 +90,14 @@ CREATE TABLE IF NOT EXISTS `vs_links` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
--- Dumping data for table `vs_links`
+-- Daten für Tabelle `vs_links`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_movies`
+-- Tabellenstruktur für Tabelle `vs_movies`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_movies` (
@@ -111,14 +111,14 @@ CREATE TABLE IF NOT EXISTS `vs_movies` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
--- Dumping data for table `vs_movies`
+-- Daten für Tabelle `vs_movies`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_movies_actors`
+-- Tabellenstruktur für Tabelle `vs_movies_actors`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_movies_actors` (
@@ -129,14 +129,14 @@ CREATE TABLE IF NOT EXISTS `vs_movies_actors` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `vs_movies_actors`
+-- Daten für Tabelle `vs_movies_actors`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vs_movies_genre`
+-- Tabellenstruktur für Tabelle `vs_movies_genre`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_movies_genre` (
@@ -147,6 +147,50 @@ CREATE TABLE IF NOT EXISTS `vs_movies_genre` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `vs_movies_genre`
+-- Daten für Tabelle `vs_movies_genre`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `vs_series`
+--
+
+CREATE TABLE IF NOT EXISTS `vs_series` (
+  `series_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `series_name` varchar(120) NOT NULL,
+  `imdb_link` text NOT NULL,
+  `movie_release_date` datetime NOT NULL,
+  PRIMARY KEY (`series_id`),
+  KEY `series_name` (`series_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Daten für Tabelle `vs_series`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `vs_series_links`
+--
+
+CREATE TABLE IF NOT EXISTS `vs_series_links` (
+  `link_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `series_id` bigint(20) unsigned NOT NULL,
+  `season` int(3) unsigned NOT NULL,
+  `episode` int(3) unsigned NOT NULL,
+  `link_url` varchar(200) NOT NULL,
+  `report_count` int(10) unsigned DEFAULT '0',
+  `not_found` int(10) unsigned DEFAULT '0',
+  PRIMARY KEY (`link_id`),
+  KEY `link_url` (`link_url`),
+  KEY `series_id` (`series_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Daten für Tabelle `vs_series_links`
 --
 

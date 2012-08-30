@@ -70,9 +70,20 @@ class Api extends CI_Controller {
         $tot = mysql_fetch_array($this->utils->get_total_links());
 
         $tot_mov = $this->utils->get_total_movies();
+        $tot_series = $this->utils->get_total_series();
+        $tot_series_links = $this->utils->get_total_series_links();
         $tot_links = $tot[0];
 
-        echo json_encode(array('total_movies' => $tot_mov, 'total_links' => $tot_links));
+		$ar = array();
+		exec('ps ax|grep python2.7',$ar); 
+        echo json_encode(array('total_movies' => $tot_mov, 
+        'total_links' => $tot_links, 
+        'total_series' => $tot_series, 
+        'total_series_links' => $tot_series_links,
+        'py_process' => count($ar) 
+        ));
+        
+        exit;
     }
 
     public function search() {
@@ -86,6 +97,31 @@ class Api extends CI_Controller {
         $movs = $this->utils->api_get_search($term)->result();
         echo json_encode($movs);
     }
+    
+    public function search_series() {
+        $this->load->model('utils', '', true);
+        $this->load->helper('url');
+        $this->load->helper('html');
+        $this->load->helper('form');
+        
+        $term = $this->input->get('term');
+        
+        $movs = $this->utils->api_get_search_series($term)->result();
+        echo json_encode($movs);
+    }
+    
+    // return single movie links
+    public function single_series() {
+        $this->load->helper('url');
+        $this->load->helper('html');
+        $this->load->helper('form');
+        $this->load->model('utils', '', true);
+        $series_id = $this->input->get('series_id');
+
+        echo json_encode($this->utils->api_single_series_links($series_id));
+    }
+    
+
 
 }
 

@@ -166,6 +166,23 @@ class Utils extends CI_Model {
         return $tot[0];
     }
 
+    //get total series for api
+
+    function get_total_series() {
+        $res = $this->db->simple_query("select count(*) 
+                from  vs_series");
+        $tot = mysql_fetch_array($res);
+        return $tot[0];
+    }
+    //get total series LINKS for api
+
+    function get_total_series_links() {
+        $res = $this->db->simple_query("select count(*) 
+                from  vs_series_links");
+        $tot = mysql_fetch_array($res);
+        return $tot[0];
+    }
+
     //return  100 links for db clean
 
     function get_links_partial($start, $limit) {
@@ -286,7 +303,73 @@ class Utils extends CI_Model {
                 where vs_movies.movie_name like '%$s%'  
                 ");
     }
+    
+    function api_get_search_series($s) {
+        $s = mysql_real_escape_string($s);
 
+        return $this->db->query("
+                select series_id, 
+                series_name,
+                imdb_link imdb_id,
+                series_release_date release_date 
+                from vs_series               
+                where vs_series.series_name like '%$s%'  
+                ");
+    }
+
+
+
+    function api_single_series_links($series_id) {
+        $data = array();
+        $res = $this->db->simple_query("select 
+                season,
+                episode,
+                link_url link                
+                from vs_series_links 
+                where 
+                series_id=$series_id");
+
+        while ($d = mysql_fetch_assoc($res)) {
+            $data[] = $d;
+        }
+        
+        
+        $uni_ar = array();
+        
+        function get_key($uni_ar,$season,$episode){
+            foreach($uni_ar as $key=> $ar):
+                if( ($ar['season'] == $season) && ($ar['episode'] == $episode) ):
+                    return $key;
+                    
+                endif;
+            endforeach;
+            return FALSE;
+            
+            
+        }
+        
+        
+        //summonning serialization
+        foreach($data as $chunk_array):
+            $key=get_key($uni_ar,$chunk_array['season'] ,$chunk_array['episode']); 
+            if($key !== FALSE):
+                $uni_ar[$key]['links'][] = $chunk_array['link'];
+                
+            else:
+                $uni_ar[]=array(
+                    'season' => $chunk_array['season'],
+                    'episode' => $chunk_array['episode'],
+                    'links' => array($chunk_array['link']),
+                    );
+            endif;
+                    
+        endforeach;
+        //var_dump($data);
+        //var_dump($uni_ar);
+        //exit;
+        return $uni_ar;
+    }
+    
 }
 
 ?>

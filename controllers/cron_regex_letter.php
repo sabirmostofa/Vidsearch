@@ -5,7 +5,7 @@ class Cron_Regex_Letter extends CI_Controller {
     public function index() {
 
         error_reporting(E_ALL);
-        //ignore_user_abort(true);
+        ignore_user_abort(true);
         //set_time_limit(4*3600);
         set_time_limit(0);
         $link_inserted = 0;
@@ -14,9 +14,6 @@ class Cron_Regex_Letter extends CI_Controller {
         include(APPPATH.'libraries/simple_html_dom.php');
          global $proxy_array;
         $proxy_array= get_proxy_list();
-        
-        var_dump($proxy_array);
-        exit;
 
 
         $base_site = 'http://www.1channel.ch';
@@ -40,13 +37,13 @@ class Cron_Regex_Letter extends CI_Controller {
 
             $base_page = $base_url . $let;
 
-$base_page = 'http://www.1channel.ch/?letter=u';
+//$base_page = 'http://www.1channel.ch/?letter=u';
             $max_page = get_max_page_regex($base_page);
 
 
             //Getting all pages
             
-            $max_page = $max_page-28;
+            //$max_page = $max_page-28;
             $f_checked=0;
             for ($i = 0; $i <= $max_page; $i++):
 
@@ -113,7 +110,6 @@ $base_page = 'http://www.1channel.ch/?letter=u';
 
                     $movie_id = (int) $this->utils->get_movie_id($m_title);
                     var_dump($movie_id);
-                    
                     $release_date = $this->utils-> get_movie_release_date($movie_id);
                     
                     // Inserting release date and imdb_Link if not exists

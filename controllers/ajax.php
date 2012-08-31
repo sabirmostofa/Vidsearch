@@ -8,6 +8,15 @@ class Ajax extends CI_Controller {
         $this->load->helper('form');
         $this->load->model('utils', '', true);
         $q = $this->input->get('query');
+      
+        $type=$this->input->get('data_type');
+        
+        if($type == series):
+            
+            exit;
+            else:
+        
+        
         $suggest = '[';
         foreach ($this->utils->get_search_terms($q)->result() as $single) {
             $suggest .= '\'' . mysql_real_escape_string($single->movie_name) . '\',';
@@ -20,6 +29,7 @@ class Ajax extends CI_Controller {
         data:'',
         }";
         exit;
+        endif;
     }
     
     

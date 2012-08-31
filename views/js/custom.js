@@ -91,21 +91,49 @@ $(document).ready(function(){
         
     
     //autocomplete
+    var get_data_type=(
+     function(){
+    
+    if(jQuery('#radio_movie').is(':checked'))
+        data_type= 'movies';
+        
+    else
+        data_type = 'series';
+    
+    return arguments.callee;
+     }
+ 
+)(jQuery)
+    
     var options = { 
         serviceUrl : ajaxUrl,
-        width:300
-    };			
-    $('#search_box').autocomplete(options);
+        width:300,
+        params: {'data_type': data_type}
+    };
     
-    $("#select_course").change(function(){
-        var courseId = $(this).val();
-        var courseName = $('select option:selected').text();
     
-        $("#course_id").attr("value", courseId);
-            
-           
+    var auto=$('#search_box').autocomplete(options);
     
-    })
+    $('input[name=data_type]').click(function() {
+     if (this.checked && $(this).val() == 'movies'){
+         get_data_type();
+        auto.setOptions({ params: {'data_type': data_type} });
+     }
+     else{
+         get_data_type();
+        auto.setOptions({ params: {'data_type': data_type} });
+     }
+});
+    
+//    $("#select_course").change(function(){
+//        var courseId = $(this).val();
+//        var courseName = $('select option:selected').text();
+//    
+//        $("#course_id").attr("value", courseId);
+//            
+//           
+//    
+//    })
     
     //subimit form action
     

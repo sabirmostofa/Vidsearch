@@ -34,7 +34,7 @@ if(isset($_GET['data_type']))
             </div>
              <div class="grid_6">
                 <input style='' type="radio" 
-                       <?php echo ($data_type == 'series')? 'checked="checked"': '' ; ?>
+                       <?php echo ($data_type == 'series')? '': 'checked="checked"'; ?>
                        name="data_type" value="series"/> 
                 <span style="">Tv Series</span>
               </div>
@@ -60,20 +60,17 @@ if(isset($_GET['data_type']))
                             
 ?>
                         
-                    <div style="margin-left:15px"> Results <b><?php echo $start  ?></b> to <b><?php echo $end; ?></b> of <b><?php echo $total_num ?></b> for <b><?php echo $_GET['search_term']  ?></b></div>
+                    <div style="margin-left:15px"> All Seasons and Episodes list for <b><?php echo $_GET['search_term']  ?></b></div>
                         
                         <?php if(isset($data))foreach($data as $single):?>
                         <div class="grid_8 link_indiv">
-                          <b><?php echo $start++ ?>.</b>  <a class="single_link" href="<?php echo $single->link_url ?>"><b><?php echo $single->movie_name ?></b></a>
-                          <div class="report">
-                                <a class="upvote"  url="#" id="up<?php echo $single->link_id ?>"></a>
-                               <span class="votecount"> (<?php echo $single->like_count ?>)</span>
-                                <a  class="downvote" url="#"  id="down<?php echo $single->link_id ?>"></a>
-                                <span class="votecount"> (<?php echo $single->report_count ?>)</span>
-                                </div>
+                          <b><?php echo $start++ ?>.</b>  
+                          <a class="single_link" href="<?php   ?>">
+                          <b><?php sprintf( "Season %s Episode %s", $single->season, $single->episode ); ?></b>
+                          </a>
+ 
                             <br/>
-                            
-                            <div style="margin-left:25px"><b>Link:</b> <a  class="single_link" href="<?php echo $single->link_url ?>"><?php echo $single->link_url?></a></div> 
+
                             
                             </div>
                         <div class="clear"></div>

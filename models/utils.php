@@ -38,6 +38,13 @@ class Utils extends CI_Model {
             return false;
         return mysql_result($res, 0);
     }
+    function get_series_id($series_name) {
+        $series_name = mysql_real_escape_string($series_name);
+        $res = $this->db->simple_query("select series_id from vs_series where series_name='$series_name' ");
+        if (mysql_num_rows($res) == 0)
+            return false;
+        return mysql_result($res, 0);
+    }
 
     function insert_movie($data) {
         $this->db->save_queries = false;
@@ -149,6 +156,33 @@ class Utils extends CI_Model {
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");
     }
+    
+    
+    //series_functions
+    function get_season_episodes($s){
+         $s = mysql_real_escape_string($s);
+         return $this->db->query("
+           select           
+           vs_series_links.series_id,
+           vs_series.series_name,
+           vs_series_links.season,
+           vs_series_links.episode
+           from vs_series           
+           inner join 
+           vs_series_links
+           on 
+           vs_series.series_id = vs_series_links.series_id
+           where 
+           vs_series.series_name='$s'
+           group by
+           vs_series_links.series_id, 
+           vs_series_links.season, 
+           vs_series_links.episode
+        ");
+         
+        
+    }
+    
 
     //get total links for cron cleanup
 

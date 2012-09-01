@@ -57,7 +57,7 @@ $(document).ready(function(){
 
 
 
-// Changing the repoted link text 
+    // Changing the repoted link text 
 
     $('.report a').each(function(){
     
@@ -74,16 +74,16 @@ $(document).ready(function(){
         var ar= prev_data.split('-');
         
          
-//        for(var x in ar){
-//          
-//            if( ar[Number(x)]== link_id){
-//                $(this).text('Reported');
-//                break;
-//                 
-//            }
-//             
-//             
-//        }  
+    //        for(var x in ar){
+    //          
+    //            if( ar[Number(x)]== link_id){
+    //                $(this).text('Reported');
+    //                break;
+    //                 
+    //            }
+    //             
+    //             
+    //        }  
     
     
     })
@@ -92,163 +92,148 @@ $(document).ready(function(){
     
     //autocomplete
     var get_data_type=(
-     function(){
+        function(){
     
-    if(jQuery('#radio_movie').is(':checked'))
-        data_type= 'movies';
+            if(jQuery('#radio_movie').is(':checked'))
+                data_type= 'movies';
         
-    else
-        data_type = 'series';
+            else
+                data_type = 'series';
     
-    return arguments.callee;
-     }
+            return arguments.callee;
+        }
  
-)(jQuery)
-    
+        )(jQuery)
+   
+   
     var options = { 
         serviceUrl : ajaxUrl,
         width:300,
-        params: {'data_type': data_type}
+        params: {
+            'data_type': data_type
+        }
     };
     
     
     var auto=$('#search_box').autocomplete(options);
     
     $('input[name=data_type]').click(function() {
-     if (this.checked && $(this).val() == 'movies'){
-         get_data_type();
-        auto.setOptions({ params: {'data_type': data_type} });
-     }
-     else{
-         get_data_type();
-        auto.setOptions({ params: {'data_type': data_type} });
-     }
-});
+        get_data_type();
+        var noCache = new Date().getTime();
+         
+        //clear autocomplete cache and make sure server doesn't cache
+ 
+        auto.cachedResponse=[]
+        auto.setOptions({
+            params: {
+                'nocache':noCache , 
+                'data_type':data_type
+            }
+        });
+
+    }
+    );
     
-//    $("#select_course").change(function(){
-//        var courseId = $(this).val();
-//        var courseName = $('select option:selected').text();
-//    
-//        $("#course_id").attr("value", courseId);
-//            
-//           
-//    
-//    })
+
     
-    //subimit form action
-    
-//    $("#tut_submit").click(function(e){
-//        e.preventDefault();
-//        
-//        var courseId = $('#select_course').val();
-//        var courseName = $('#select_course option:selected').text();
-//        var batchId = $('#course_batch').val();
-//        //Getting content using ajax
-//        $.ajax({
-//            
-//            type :  "post",
-//            url : ajaxUrl,
-//            timeout : 5000,           
-//            data : {
-//                'action' : 'get_table_data',
-//                'course_id' : courseId,
-//                'course_name': courseName,
-//                'batch_id': batchId
-//            },
-//            success :  function(data){
-//                alert(data);
-//            }
-//            
-//        } )
-//                
-//    })
-    
-    //Link reporting as Dead
-    $('.report a').click(function(e){
-        var this_link = $(this);
-        e.preventDefault();
-        var link_id_main=$(this).attr('id');
+//Link reporting as Dead
+$('.report a').click(function(e){
+    var this_link = $(this);
+    e.preventDefault();
+    var link_id_main=$(this).attr('id');
         
-        var rew=/[a-z]+/;
-        var red=/\d+/;
+    var rew=/[a-z]+/;
+    var red=/\d+/;
         
-      var action =  rew.exec(link_id_main);
-       var link_id = red.exec(link_id_main);
-       action = action[0];
-       link_id = link_id[0];
+    var action =  rew.exec(link_id_main);
+    var link_id = red.exec(link_id_main);
+    action = action[0];
+    link_id = link_id[0];
        
 
         
        
-        if(docCookies.hasItem('vs_data'))
-            var prev_data = docCookies.getItem('vs_data');
-        else 
-            var prev_data='';
+    if(docCookies.hasItem('vs_data'))
+        var prev_data = docCookies.getItem('vs_data');
+    else 
+        var prev_data='';
         
    
          
-        var ar= Array();
-        var ar= prev_data.split('-');
+    var ar= Array();
+    var ar= prev_data.split('-');
         
          
-        for(var x in ar){
+    for(var x in ar){
           
-            if( ar[Number(x)]== link_id){
-                alert('You have already reported this link');
-                return;
+        if( ar[Number(x)]== link_id){
+            alert('You have already reported this link');
+            return;
                  
-            }
-             
-             
         }
              
+             
+    }
+             
          
+    function getParameterByName(name)
+    {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var results = regex.exec(window.location.search);
+        if(results == null)
+            return "";
+        else
+            return decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+    
+    var data_type = getParameterByName('data_type');
          
-       
-         
-        var report_ajax_url = ajaxUrl+'&m=report_link';
+    var report_ajax_url = ajaxUrl+'&m=report_link';
         
          
          
-        //report using ajax
+    //report using ajax
          
-        $.ajax({
+    $.ajax({
             
-            type :  "get",
-            url : report_ajax_url,
-            timeout : 5000,           
-            data : {
-                'action' : 'report_data',
-                'link_id' : link_id,
-                'todo': action
+        type :  "get",
+        url : report_ajax_url,
+        timeout : 5000,           
+        data : {
+            'action' : 'report_data',
+            'link_id' : link_id,
+            'data_type': data_type,
+            'todo': action
                 
               
-            },
-            success :  function(data){
+        },
+        success :  function(data){
                
-                if( prev_data == '' )
-                    docCookies.setItem( 'vs_data', link_id, null, '/');
-                else                   
-                    docCookies.setItem( 'vs_data', prev_data+'-'+link_id, null, '/');
+            if( prev_data == '' )
+                docCookies.setItem( 'vs_data', link_id, null, '/');
+            else                   
+                docCookies.setItem( 'vs_data', prev_data+'-'+link_id, null, '/');
                 
-                var vote_count =  this_link.next().text();
+            var vote_count =  this_link.next().text();
                 
-               var vc =Number (red.exec(vote_count));
+            var vc =Number (red.exec(vote_count));
                 
-                 this_link.next().text('('+ Number(vc+1)+')');
+            this_link.next().text('('+ Number(vc+1)+')');
                 
                 
                
                
-            }
+        }
             
-        } )
+    } )
               
          
   
          
         
         
-    })
+})
     
 })

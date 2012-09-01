@@ -11,15 +11,11 @@ class Ajax extends CI_Controller {
       
         $type=$this->input->get('data_type');
         
-        if($type == series):
-            
-            exit;
-            else:
-        
+    
         
         $suggest = '[';
-        foreach ($this->utils->get_search_terms($q)->result() as $single) {
-            $suggest .= '\'' . mysql_real_escape_string($single->movie_name) . '\',';
+        foreach ($this->utils->get_search_terms($q,$type)->result() as $single) {
+            $suggest .= '\'' . mysql_real_escape_string($single->name) . '\',';
         }
 
         $suggest = trim($suggest, ',') . ']';
@@ -29,7 +25,7 @@ class Ajax extends CI_Controller {
         data:'',
         }";
         exit;
-        endif;
+        
     }
     
     
@@ -42,12 +38,13 @@ class Ajax extends CI_Controller {
         //var_dump($_GET['link_id']);
         $link_id = $this->input->get('link_id');
         $todo = $this->input->get('todo');
+        $type = $this->input->get('data_type');
         
        
         if($todo == 'down')
-         $this->utils->add_report($link_id);
+         $this->utils->add_report($link_id, $type);
         else
-            $this->utils->add_up($link_id);
+            $this->utils->add_up($link_id, $type);
         exit;
         
     }

@@ -5,6 +5,13 @@ $data_type=null;
 if(isset($_GET['data_type']))
  $data_type = $_GET['data_type'];   
 
+$season = null;
+if(isset($_GET['season']))
+ $season = $_GET['season']; 
+$episode = null;
+if(isset($_GET['episode']))
+ $episode = $_GET['episode']; 
+
 
 
 ?>
@@ -36,7 +43,7 @@ if(isset($_GET['data_type']))
                 <input style='' type="radio" 
                        <?php echo ($data_type == 'series')? 'checked="checked"': '' ; ?>
                        name="data_type" value="series"/> 
-                <span style="">Tv Series</span>
+                <span style="">Tv Shows</span>
               </div>
 <!--            <div class="grid_3"></div>-->
             
@@ -60,11 +67,18 @@ if(isset($_GET['data_type']))
                             
 ?>
                         
-                    <div style="margin-left:15px"> Results <b><?php echo $start  ?></b> to <b><?php echo $end; ?></b> of <b><?php echo $total_num ?></b> for <b><?php echo $_GET['search_term']  ?></b></div>
+                    <div style="margin-left:15px"> Results <b><?php echo $start  ?></b> to <b><?php echo $end; ?></b> of <b><?php echo $total_num ?></b> for <b><?php echo $_GET['search_term']  ?>
+                         <?php if($season)echo sprintf(': Season %s Episode %s', $season, $episode); ?> 
+                        </b></div>
                         
                         <?php if(isset($data))foreach($data as $single):?>
                         <div class="grid_8 link_indiv">
-                          <b><?php echo $start++ ?>.</b>  <a class="single_link" href="<?php echo $single->link_url ?>"><b><?php echo $single->movie_name ?></b></a>
+                          <b><?php echo $start++ ?>.</b>  <a class="single_link" href="<?php echo $single->link_url ?>">
+                              <b>
+                                  <?php echo $single->name ?>
+                                  <?php if($season)echo sprintf(': Season %s Episode %s', $season, $episode); ?>
+                              
+                              </b></a>
                           <div class="report">
                                 <a class="upvote"  url="#" id="up<?php echo $single->link_id ?>"></a>
                                <span class="votecount"> (<?php echo $single->like_count ?>)</span>

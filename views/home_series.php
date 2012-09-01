@@ -23,7 +23,7 @@ if(isset($_GET['data_type']))
                     </div>
                     <div class="clear"></div>    
                     <br/>
-<!--                    <div class="grid_3" style="display:none"></div>-->
+                    <div class="grid_3" style="display:none"></div>
                     
             <div class="grid_6">
              <div style="float:right;">   
@@ -34,49 +34,46 @@ if(isset($_GET['data_type']))
             </div>
              <div class="grid_6">
                 <input style='' type="radio" 
-                       <?php echo ($data_type == 'series')? '': 'checked="checked"'; ?>
+                       <?php echo ($data_type == 'series')? 'checked="checked"':''; ?>
                        name="data_type" value="series"/> 
-                <span style="">Tv Series</span>
+                <span style="">Tv Shows</span>
               </div>
 <!--            <div class="grid_3"></div>-->
             
                     <form>
                     <!-- Start Showing The Search Results -->
-                    <div class="grid_9" id="result_container">
+<!--                    <div class="grid_9" id="result_container">-->
                         <?php if(isset($_GET['search_term'])):  
                         if(isset($_GET['per_page']) && is_numeric($_GET['per_page']) )
                             $cur_page= $_GET['per_page'];
                         else $cur_page = 0;
                         
-                        $start= $cur_page+1;
-                        $start=  $total_num == 0?0:$start;
-                        $end= $start+9;
-                        $end = $end>$total_num? $total_num:$end;
-                        
-                        $upvote = 0;
-                        $downvote =0;
+                    $start =1
                
                         
                             
 ?>
-                        
-                    <div style="margin-left:15px"> All Seasons and Episodes list for <b><?php echo $_GET['search_term']  ?></b></div>
-                        
-                        <?php if(isset($data))foreach($data as $single):?>
-                        <div class="grid_8 link_indiv">
+                         <div class="grid_9 prefix_2" style="font-size: 15px;line-height: 20px; margin-top: 20px" >  
+                    <div style="margin-left:15px"> All Seasons and Episodes for <b><?php echo $_GET['search_term']  ?></b></div>
+                       <br/>
+                        <?php if(isset($data) && is_array($data) ):
+                           
+                            foreach($data as $single):  ?>
+                        <div class="grid_3 alpha omega ">
                           <b><?php echo $start++ ?>.</b>  
-                          <a class="single_link" href="<?php   ?>">
-                          <b><?php sprintf( "Season %s Episode %s", $single->season, $single->episode ); ?></b>
-                          </a>
- 
-                            <br/>
-
-                            
+                          <?php $url= base_url(). sprintf('?search_term=%s&season=%s&episode=%s&data_type=series&series_id=%s',$_GET['search_term'], $single->season, $single ->episode,$single->series_id); ?>
+                          <a class="single_link" href="<?php echo $url    ?>">
+                          <b><?php echo sprintf( "Season %s Episode %s", $single->season, $single->episode ); ?></b>
+                          </a> 
+                            <br/>                            
                             </div>
+                    <?php endforeach; ?>
+              
+                    <?php endif; //end of series found ?>
                         <div class="clear"></div>
                             
                             
-                        <?php endforeach; ?>
+                        
                         <div class="clear"></div>
                         
                         <!-- Pagination -->
@@ -89,7 +86,7 @@ if(isset($_GET['data_type']))
                     </div>
                         <?php endif; ?>
                         
-                    </div><!-- End of Result COntainer   -->
+                    </div> <!--End of Result COntainer   -->
 
                     </div>
 

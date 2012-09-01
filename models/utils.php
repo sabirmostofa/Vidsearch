@@ -25,10 +25,9 @@ class Utils extends CI_Model {
 
     function insert_release_imdb_info($id, $imdb, $release_date) {
         $this->db->save_queries = false;
-        $this->movie_channel_link=$imdb;
-        $this->movie_release_date=$release_date;
-        return $this->db->update('vs_movies', $this ,array('movie_id' => $id));
-        
+        $this->movie_channel_link = $imdb;
+        $this->movie_release_date = $release_date;
+        return $this->db->update('vs_movies', $this, array('movie_id' => $id));
     }
 
     function get_movie_id($movie_name) {
@@ -38,6 +37,7 @@ class Utils extends CI_Model {
             return false;
         return mysql_result($res, 0);
     }
+
     function get_series_id($series_name) {
         $series_name = mysql_real_escape_string($series_name);
         $res = $this->db->simple_query("select series_id from vs_series where series_name='$series_name' ");
@@ -134,9 +134,12 @@ class Utils extends CI_Model {
 
     //Ajax Functions
 
-    function get_search_terms($q) {
+    function get_search_terms($q, $term) {
         $q = mysql_real_escape_string($q);
-        return $this->db->query("select movie_name from vs_movies where movie_name like '$q%' limit 50");
+        if ($term == 'movies')
+            return $this->db->query("select movie_name name from vs_movies where movie_name like '$q%' limit 50");
+        else
+            return $this->db->query("select series_name name from vs_series where series_name like '$q%' limit 50");
     }
 
     //front functions
@@ -145,9 +148,50 @@ class Utils extends CI_Model {
         $s = mysql_real_escape_string($s);
         $low = $start;
         $amount = 10;
-        return $this->db->query("select vs_movies.movie_name, vs_links.link_url,vs_links.link_id, vs_links.like_count,
+        return $this->db->query("select vs_movies.movie_name name, vs_links.link_url,vs_links.link_id, vs_links.like_count,
                 vs_links.report_count from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s' order by like_count desc limit $low, $amount ");
+    }
+    
+    
+    //series_links
+    function get_series_episode_links($s,$series_id, $season, $episode,$start ){
+        $s = mysql_real_escape_string($s);
+        $amount = 10;
+        
+        return $this->db->query("
+            select
+            vs_series.series_name name,
+            vs_series_links.link_id,
+            vs_series_links.link_url,
+            vs_series_links.like_count,
+            vs_series_links.report_count
+            from vs_series
+            inner join vs_series_links
+            on vs_series.series_id = vs_series_links.series_id
+            where vs_series.series_id = $series_id
+            and season = $season
+            and episode = $episode
+            order by like_count desc
+            limit $start , $amount   
+
+        ");
+        
+    }
+    
+    //get total episode links
+    
+    function get_total_episode_num($series_id, $season, $episode){
+        return $this->db->query("
+            select
+            count(*) as total
+            from vs_series_links
+            where series_id=$series_id
+            and season = $season
+            and episode = $episode
+
+    ");
+        
     }
 
     function get_total_num($s) {
@@ -156,12 +200,11 @@ class Utils extends CI_Model {
                 from vs_movies inner join vs_links on vs_movies.movie_id = vs_links.movie_id 
                 where vs_movies.movie_name='$s'");
     }
-    
-    
+
     //series_functions
-    function get_season_episodes($s){
-         $s = mysql_real_escape_string($s);
-         return $this->db->query("
+    function get_season_episodes($s) {
+        $s = mysql_real_escape_string($s);
+        return $this->db->query("
            select           
            vs_series_links.series_id,
            vs_series.series_name,
@@ -179,10 +222,7 @@ class Utils extends CI_Model {
            vs_series_links.season, 
            vs_series_links.episode
         ");
-         
-        
     }
-    
 
     //get total links for cron cleanup
 
@@ -208,6 +248,7 @@ class Utils extends CI_Model {
         $tot = mysql_fetch_array($res);
         return $tot[0];
     }
+
     //get total series LINKS for api
 
     function get_total_series_links() {
@@ -248,16 +289,19 @@ class Utils extends CI_Model {
     }
 
     //function update a report count
-    function add_report($link_id) {
-        return $this->db->simple_query("update vs_links set report_count=report_count+1 where link_id = $link_id ");
+    function add_report($link_id, $type) {
+        $table = ($type=='series')? 'vs_series_links':'vs_links';
+        $this->db->simple_query("update $table set report_count=report_count+1 where link_id = $link_id ");
+        
     }
 
-    function add_up($link_id) {
-        return $this->db->simple_query("update vs_links set like_count=like_count+1 where link_id = $link_id ");
+    function add_up($link_id,$type) {
+        $table = ($type=='series')? 'vs_series_links':'vs_links';
+        return $this->db->simple_query("update $table set like_count=like_count+1 where link_id = $link_id ");
     }
 
     //function get report count
-    function get_report_count($link_id) {
+    function get_report_count($link_id, $type) {
         $data = mysql_fetch_assoc($this->db->simple_query("select report_count from vs_links where link_id = $link_id "));
         return $data['report_count'];
     }
@@ -337,7 +381,7 @@ class Utils extends CI_Model {
                 where vs_movies.movie_name like '%$s%'  
                 ");
     }
-    
+
     function api_get_search_series($s) {
         $s = mysql_real_escape_string($s);
 
@@ -350,8 +394,6 @@ class Utils extends CI_Model {
                 where vs_series.series_name like '%$s%'  
                 ");
     }
-
-
 
     function api_single_series_links($series_id) {
         $data = array();
@@ -366,44 +408,41 @@ class Utils extends CI_Model {
         while ($d = mysql_fetch_assoc($res)) {
             $data[] = $d;
         }
-        
-        
+
+
         $uni_ar = array();
-        
-        function get_key($uni_ar,$season,$episode){
-            foreach($uni_ar as $key=> $ar):
-                if( ($ar['season'] == $season) && ($ar['episode'] == $episode) ):
+
+        function get_key($uni_ar, $season, $episode) {
+            foreach ($uni_ar as $key => $ar):
+                if (($ar['season'] == $season) && ($ar['episode'] == $episode)):
                     return $key;
-                    
+
                 endif;
             endforeach;
             return FALSE;
-            
-            
         }
-        
-        
+
         //summonning serialization
-        foreach($data as $chunk_array):
-            $key=get_key($uni_ar,$chunk_array['season'] ,$chunk_array['episode']); 
-            if($key !== FALSE):
+        foreach ($data as $chunk_array):
+            $key = get_key($uni_ar, $chunk_array['season'], $chunk_array['episode']);
+            if ($key !== FALSE):
                 $uni_ar[$key]['links'][] = $chunk_array['link'];
-                
+
             else:
-                $uni_ar[]=array(
+                $uni_ar[] = array(
                     'season' => $chunk_array['season'],
                     'episode' => $chunk_array['episode'],
                     'links' => array($chunk_array['link']),
-                    );
+                );
             endif;
-                    
+
         endforeach;
         //var_dump($data);
         //var_dump($uni_ar);
         //exit;
         return $uni_ar;
     }
-    
+
 }
 
 ?>
